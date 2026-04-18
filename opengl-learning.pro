@@ -10,4 +10,4 @@ HEADERS += \
     glwidget.h
 
 RESOURCES += \
-    resources. grc
+    resources.qrc
