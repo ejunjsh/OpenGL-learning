@@ -47,6 +47,7 @@ void GLWidget::initializeGL()
         qFatal("Failed to link shader program");
     }
 
+    // 三角形顶点
     const float vertices[] = {
         0.0f, 0.6f, 0.0f,
         -0.6f, -0.6f, 0.0f,
@@ -89,8 +90,10 @@ void GLWidget::paintGL()
 
     const QMatrix4x4 mvp = projection * view * model;
 
+    // 绘制三角形（橙色）
     m_program.bind();
     m_program.setUniformValue("uMVP", mvp);
+    m_program.setUniformValue("uColor", QVector3D(0.95f, 0.45f, 0.2f));
     m_vao.bind();
     glDrawArrays(GL_TRIANGLES, 0, 3);
     m_vao.release();
@@ -200,10 +203,15 @@ void GLWidget::updateCameraByKeyboard(float dt)
     const QVector3D front = m_cameraFront.normalized();
     const QVector3D right = QVector3D::crossProduct(front, worldUp).normalized();
 
+    // 水平行走：只保留前向向量的水平分量
+    QVector3D horizontalFront = front;
+    horizontalFront.setY(0.0f);
+    horizontalFront.normalize();
+
     if (m_keys.contains(Qt::Key_W))
-        m_cameraPos += front * speed;
+        m_cameraPos += horizontalFront * speed;
     if (m_keys.contains(Qt::Key_S))
-        m_cameraPos -= front * speed;
+        m_cameraPos -= horizontalFront * speed;
     if (m_keys.contains(Qt::Key_A))
         m_cameraPos -= right * speed;
     if (m_keys.contains(Qt::Key_D))
