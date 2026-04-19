@@ -27,6 +27,7 @@ protected:
     void enterEvent(QEnterEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
     void leaveEvent(QEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
     void keyReleaseEvent(QKeyEvent *event) override;
@@ -52,6 +53,7 @@ private:
     float m_lastY = 0.0f;
 
     bool m_fastMode = false;
+    bool m_mousePressed = false;
     QSet<int> m_keys;
     QElapsedTimer m_timer;
     QTimer m_frameTimer;

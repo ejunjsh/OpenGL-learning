@@ -11,7 +11,7 @@ GLWidget::GLWidget(QWidget *parent)
 {
     setMouseTracking(true);
     setFocusPolicy(Qt::StrongFocus);
-    setCursor(Qt::BlankCursor);
+    setCursor(Qt::OpenHandCursor);
 
     m_timer.start();
     connect(&m_frameTimer, &QTimer::timeout, this, [this]() {
@@ -99,14 +99,23 @@ void GLWidget::paintGL()
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
+    m_mousePressed = true;
     m_firstMouse = true;
+    setCursor(Qt::ClosedHandCursor);
     QOpenGLWidget::mousePressEvent(event);
+}
+
+void GLWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+    m_mousePressed = false;
+    setCursor(Qt::OpenHandCursor);
+    QOpenGLWidget::mouseReleaseEvent(event);
 }
 
 void GLWidget::enterEvent(QEnterEvent *event)
 {
     Q_UNUSED(event);
-    setCursor(Qt::BlankCursor);
+    setCursor(Qt::OpenHandCursor);
 }
 
 void GLWidget::leaveEvent(QEvent *event)
@@ -117,6 +126,11 @@ void GLWidget::leaveEvent(QEvent *event)
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
+    if (!m_mousePressed)
+    {
+        return;
+    }
+
     const float xpos = static_cast<float>(event->position().x());
     const float ypos = static_cast<float>(event->position().y());
 
