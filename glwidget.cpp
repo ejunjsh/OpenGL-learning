@@ -171,7 +171,8 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Escape)
     {
-        close();
+        QWidget *mainWindow = parentWidget();
+        mainWindow->close();
         return;
     }
 
