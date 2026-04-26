@@ -12,6 +12,7 @@
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QEvent>
+#include <QLabel>
 #include <vector>
 
 class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
@@ -58,4 +59,7 @@ private:
     QSet<int> m_keys;
     QElapsedTimer m_timer;
     QTimer m_frameTimer;
+    QLabel *m_fpsLabel;
+    int m_frameCount = 0;
+    QElapsedTimer m_fpsTimer;
 };

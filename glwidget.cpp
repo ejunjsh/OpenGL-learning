@@ -13,11 +13,27 @@ GLWidget::GLWidget(QWidget *parent)
     setFocusPolicy(Qt::StrongFocus);
     setCursor(Qt::OpenHandCursor);
 
+    m_fpsLabel = new QLabel(this);
+    m_fpsLabel->setStyleSheet("color: white; background: rgba(0,0,0,100); padding: 4px; min-width: 80px;");
+    m_fpsLabel->setText("FPS: 0");
+    m_fpsLabel->move(10, 0);
+
     m_timer.start();
+    m_fpsTimer.start();
     connect(&m_frameTimer, &QTimer::timeout, this, [this]() {
         const qint64 ms = m_timer.restart();
         const float dt = static_cast<float>(ms) / 1000.0f;
         updateCameraByKeyboard(dt);
+
+        m_frameCount++;
+        const qint64 elapsed = m_fpsTimer.elapsed();
+        if (elapsed >= 1000) {
+            const float fps = m_frameCount * 1000.0 / elapsed;
+            m_fpsLabel->setText(QString("FPS: %1").arg(fps, 0, 'f', 1));
+            m_frameCount = 0;
+            m_fpsTimer.restart();
+        }
+
         update();
     });
 
