@@ -3,8 +3,7 @@
 ActionButton::ActionButton(const QString &text, QWidget *parent)
     : QPushButton(text, parent)
 {
-    setMinimumWidth(200);
-    setFixedHeight(50);
+    setFixedHeight(30);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     setStyleSheet(
         "QPushButton {"

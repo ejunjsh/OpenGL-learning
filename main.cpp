@@ -18,14 +18,14 @@ int main(int argc, char *argv[])
 
     QWidget mainWindow;
     mainWindow.setWindowTitle("opengl-learning");
-    mainWindow.setFixedSize(960, 640);
+    mainWindow.setFixedSize(1200, 640);
 
     QHBoxLayout *layout = new QHBoxLayout(&mainWindow);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
 
     GLWidget *glWidget = new GLWidget;
-    glWidget->setFixedSize(640, 640);
+    glWidget->setFixedSize(960, 640);
     layout->addWidget(glWidget);
 
     Panel *panel = new Panel;
@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
         glWidget = newWidget;
         layout->insertWidget(0, glWidget);
         glWidget->setFocus();
-        glWidget->setFixedSize(640, 640);
+        glWidget->setFixedSize(960, 640);
     });
 
     mainWindow.show();
