@@ -14,7 +14,7 @@ GLWidget::GLWidget(QWidget *parent)
     setCursor(Qt::OpenHandCursor);
 
     m_fpsLabel = new QLabel(this);
-    m_fpsLabel->setStyleSheet("color: white; background: rgba(0,0,0,100); padding: 4px; min-width: 80px;");
+    m_fpsLabel->setStyleSheet("color: yellow; background: rgba(0,0,0,100); padding: 4px; min-width: 80px; font-weight: bold;");
     m_fpsLabel->setText("FPS: 0");
     m_fpsLabel->move(10, 0);
 
