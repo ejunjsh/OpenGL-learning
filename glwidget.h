@@ -3,8 +3,6 @@
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions_3_3_Core>
 #include <QOpenGLShaderProgram>
-#include <QOpenGLBuffer>
-#include <QOpenGLVertexArrayObject>
 #include <QVector3D>
 #include <QSet>
 #include <QTimer>
@@ -13,7 +11,10 @@
 #include <QKeyEvent>
 #include <QEvent>
 #include <QLabel>
-#include <vector>
+#include <memory>
+
+#include "camera.h"
+#include "object3d.h"
 
 class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
 {
@@ -35,26 +36,22 @@ protected:
     void keyReleaseEvent(QKeyEvent *event) override;
 
 private:
-    void updateCameraByKeyboard(float dt);
+    void updateCamera(float dt);
+    void setupScene();
 
 private:
     QOpenGLShaderProgram m_program;
-    QOpenGLBuffer m_vbo;
-    QOpenGLVertexArrayObject m_vao;
-    QVector3D m_cameraPos = QVector3D(0.0f, 0.0f, 3.0f);
-    QVector3D m_cameraFront = QVector3D(0.0f, 0.0f, -1.0f);
-    QVector3D m_cameraUp = QVector3D(0.0f, 1.0f, 0.0f);
-    float m_yaw = -90.0f;
-    float m_pitch = 0.0f;
-    float m_mouseSensitivity = 0.12f;
-    float m_moveSpeed = 2.5f;
+
+    // 使用 Camera 类
+    std::unique_ptr<Camera> m_camera;
+
+    // 场景根节点
+    std::shared_ptr<Object3D> m_rootObject;
+
     bool m_firstMouse = true;
-
     float m_lastX = 0.0f;
-
     float m_lastY = 0.0f;
 
-    bool m_fastMode = false;
     bool m_mousePressed = false;
     QSet<int> m_keys;
     QElapsedTimer m_timer;

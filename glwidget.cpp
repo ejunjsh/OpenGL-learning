@@ -4,10 +4,11 @@
 #include <QDebug>
 #include <algorithm>
 #include <cmath>
+#include "mesh.h"
 
 GLWidget::GLWidget(QWidget *parent)
     : QOpenGLWidget(parent)
-    , m_vbo(QOpenGLBuffer::VertexBuffer)
+    , m_camera(std::make_unique<Camera>())
 {
     setMouseTracking(true);
     setFocusPolicy(Qt::StrongFocus);
@@ -23,7 +24,7 @@ GLWidget::GLWidget(QWidget *parent)
     connect(&m_frameTimer, &QTimer::timeout, this, [this]() {
         const qint64 ms = m_timer.restart();
         const float dt = static_cast<float>(ms) / 1000.0f;
-        updateCameraByKeyboard(dt);
+        updateCamera(dt);
 
         m_frameCount++;
         const qint64 elapsed = m_fpsTimer.elapsed();
@@ -43,8 +44,7 @@ GLWidget::GLWidget(QWidget *parent)
 GLWidget::~GLWidget()
 {
     makeCurrent();
-    m_vao.destroy();
-    m_vbo.destroy();
+    m_rootObject.reset();
     doneCurrent();
 }
 
@@ -63,24 +63,8 @@ void GLWidget::initializeGL()
         qFatal("Failed to link shader program");
     }
 
-    // 三角形顶点
-    const float vertices[] = {
-        0.0f, 0.6f, 0.0f,
-        -0.6f, -0.6f, 0.0f,
-        0.6f, -0.6f, 0.0f
-    };
-
-    m_vao.create();
-    m_vao.bind();
-    m_vbo.create();
-    m_vbo.bind();
-    m_vbo.allocate(vertices, sizeof(vertices));
-    m_program.bind();
-    m_program.setAttributeBuffer("aPos", GL_FLOAT, 0, 3);
-    m_program.enableAttributeArray("aPos");
-    m_vao.release();
-    m_vbo.release();
-    m_program.release();
+    // 创建场景
+    setupScene();
 }
 
 void GLWidget::resizeGL(int w, int h)
@@ -94,26 +78,42 @@ void GLWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
 
-    QMatrix4x4 model;
-    model.setToIdentity();
-
-    QMatrix4x4 view;
-    view.lookAt(m_cameraPos, m_cameraPos + m_cameraFront, m_cameraUp);
-
-    QMatrix4x4 projection;
     const float aspect = static_cast<float>(width()) / height();
-    projection.perspective(45.0f, aspect, 0.1f, 100.0f);
+    const QMatrix4x4 projection = m_camera->getProjectionMatrix(aspect);
+    const QMatrix4x4 view = m_camera->getViewMatrix();
 
-    const QMatrix4x4 mvp = projection * view * model;
-
-    // 绘制三角形（橙色）
     m_program.bind();
-    m_program.setUniformValue("uMVP", mvp);
-    m_program.setUniformValue("uColor", QVector3D(0.95f, 0.45f, 0.2f));
-    m_vao.bind();
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-    m_vao.release();
+    m_program.setUniformValue("view", view);
+    m_program.setUniformValue("projection", projection);
+    m_program.setUniformValue("uColor", QVector3D(0.95f, 0.45f, 0.2f));  // 橙色
+
+    // 绘制场景
+    if (m_rootObject)
+    {
+        m_rootObject->draw(m_program);
+    }
+
     m_program.release();
+}
+
+void GLWidget::setupScene()
+{
+    // 创建三角形顶点
+    std::vector<Vertex> vertices = {
+        Vertex(QVector3D(0.0f, 0.6f, 0.0f)),
+        Vertex(QVector3D(-0.6f, -0.6f, 0.0f)),
+        Vertex(QVector3D(0.6f, -0.6f, 0.0f))
+    };
+
+    std::vector<unsigned int> indices = {0, 1, 2};
+
+    auto mesh = std::make_shared<Mesh>(vertices, indices);
+    auto triangle = std::make_shared<Object3D>("Triangle");
+    triangle->addMesh(mesh);
+    triangle->setPosition(QVector3D(0.0f, 0.0f, 0.0f));
+
+    m_rootObject = std::make_shared<Object3D>("Root");
+    m_rootObject->addChild(triangle);
 }
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
@@ -166,19 +166,8 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
     m_lastX = xpos;
     m_lastY = ypos;
 
-    xoffset *= m_mouseSensitivity;
-    yoffset *= m_mouseSensitivity;
-
-    m_yaw += xoffset;
-    m_pitch += yoffset;
-
-    m_pitch = std::clamp(m_pitch, -89.0f, 89.0f);
-
-    QVector3D front;
-    front.setX(std::cos(qDegreesToRadians(m_yaw)) * std::cos(qDegreesToRadians(m_pitch)));
-    front.setY(std::sin(qDegreesToRadians(m_pitch)));
-    front.setZ(std::sin(qDegreesToRadians(m_yaw)) * std::cos(qDegreesToRadians(m_pitch)));
-    m_cameraFront = front.normalized();
+    // 使用 Camera 类处理鼠标移动
+    m_camera->processMouseMovement(xoffset, yoffset);
 
     QOpenGLWidget::mouseMoveEvent(event);
 }
@@ -193,10 +182,6 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
     }
 
     m_keys.insert(event->key());
-    if (event->key() == Qt::Key_Shift)
-    {
-        m_fastMode = true;
-    }
 
     QOpenGLWidget::keyPressEvent(event);
 }
@@ -204,38 +189,16 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
 void GLWidget::keyReleaseEvent(QKeyEvent *event)
 {
     m_keys.remove(event->key());
-    if (event->key() == Qt::Key_Shift)
-    {
-        m_fastMode = false;
-    }
 
     QOpenGLWidget::keyReleaseEvent(event);
 }
 
-void GLWidget::updateCameraByKeyboard(float dt)
+void GLWidget::updateCamera(float dt)
 {
-    const float speed = m_moveSpeed * (m_fastMode ? 3.0f : 1.0f) * dt;
+    // Shift 键加速
+    const float speedMultiplier = m_keys.contains(Qt::Key_Shift) ? 3.0f : 1.0f;
+    m_camera->setMovementSpeed(2.5f * speedMultiplier);
 
-    const QVector3D worldUp(0.0f, 1.0f, 0.0f);
-    const QVector3D front = m_cameraFront.normalized();
-    const QVector3D right = QVector3D::crossProduct(front, worldUp).normalized();
-
-    // 水平行走：只保留前向向量的水平分量
-    QVector3D horizontalFront = front;
-    horizontalFront.setY(0.0f);
-    horizontalFront.normalize();
-
-    if (m_keys.contains(Qt::Key_W))
-        m_cameraPos += horizontalFront * speed;
-    if (m_keys.contains(Qt::Key_S))
-        m_cameraPos -= horizontalFront * speed;
-    if (m_keys.contains(Qt::Key_A))
-        m_cameraPos -= right * speed;
-    if (m_keys.contains(Qt::Key_D))
-        m_cameraPos += right * speed;
-
-    if (m_keys.contains(Qt::Key_Space))
-        m_cameraPos += worldUp * speed;
-    if (m_keys.contains(Qt::Key_Control))
-        m_cameraPos -= worldUp * speed;
+    // 使用 Camera 类处理键盘输入
+    m_camera->processKeyboard(m_keys, dt);
 }
