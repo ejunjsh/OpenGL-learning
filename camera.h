@@ -45,24 +45,24 @@ public:
     void setZoom(float zoom) { m_zoom = qBound(1.0f, zoom, 45.0f); }
 
 private:
-    // 相机属性
-    QVector3D m_position;
-    QVector3D m_front;
-    QVector3D m_up;
-    QVector3D m_right;
-    QVector3D m_worldUp;
+    // ===== 相机位置与方向 =====
+    QVector3D m_position;   // 相机在世界坐标系中的位置
+    QVector3D m_front;      // 相机的前向向量（指向观察目标）
+    QVector3D m_up;         // 相机的上向量（已正交化）
+    QVector3D m_right;      // 相机的右向量（由 front x worldUp 计算）
+    QVector3D m_worldUp;    // 世界的上向量，初始为 (0,1,0)
 
-    // 欧拉角
-    float m_yaw;
-    float m_pitch;
+    // ===== 欧拉角（控制相机朝向）=====
+    float m_yaw;            // 偏航角，绕 Y 轴旋转，负值向左，正值向右
+    float m_pitch;          // 俯仰角，绕 X 轴旋转，负值向下，正值向上
 
-    // 相机选项
-    float m_movementSpeed;
-    float m_mouseSensitivity;
-    float m_zoom;
+    // ===== 移动与交互参数 =====
+    float m_movementSpeed;  // WASD 移动速度（单位/秒）
+    float m_mouseSensitivity; // 鼠标灵敏度，控制视角转动速度
+    float m_zoom;           // 缩放/FOV 值，控制透视投影的视野角度
 
-    // 投影参数
-    float m_fov;
-    float m_nearPlane;
-    float m_farPlane;
+    // ===== 投影参数 =====
+    float m_fov;            // 视野角度（Field of View）
+    float m_nearPlane;      // 近裁剪面距离
+    float m_farPlane;       // 远裁剪面距离
 };
