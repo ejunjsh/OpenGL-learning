@@ -2,6 +2,7 @@
 #include "actionbutton.h"
 #include "gltrianglewidget.h"
 #include "gltexturewidget.h"
+#include "gltransformwidget.h"
 #include <QVBoxLayout>
 #include <QTimer>
 
@@ -25,9 +26,11 @@ void Panel::setupUI()
 
     ActionButton *triangleBtn = new ActionButton("hello triangle", this, new GLTriangleWidget());
     ActionButton *textureBtn = new ActionButton("hello texture", this, new GLTextureWidget());
+    ActionButton *transformBtn = new ActionButton("hello transform", this, new GLTransformWidget());
 
     layout->addWidget(triangleBtn);
     layout->addWidget(textureBtn);
+    layout->addWidget(transformBtn);
     layout->addStretch();
 
     QTimer::singleShot(0, triangleBtn, &QPushButton::click);

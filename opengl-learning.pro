@@ -7,6 +7,7 @@ SOURCES += \
     glwidget.cpp \
     gltrianglewidget.cpp \
     gltexturewidget.cpp \
+    gltransformwidget.cpp \
     panel.cpp \
     actionbutton.cpp \
     camera.cpp \
@@ -17,6 +18,7 @@ HEADERS += \
     glwidget.h \
     gltrianglewidget.h \
     gltexturewidget.h \
+    gltransformwidget.h \
     panel.h \
     actionbutton.h \
     camera.h \
