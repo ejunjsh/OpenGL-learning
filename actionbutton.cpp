@@ -1,7 +1,9 @@
 #include "actionbutton.h"
+#include "panel.h"
 
-ActionButton::ActionButton(const QString &text, QWidget *parent)
+ActionButton::ActionButton(const QString &text, QWidget *parent, GLWidget *glWidget)
     : QPushButton(text, parent)
+    , m_glWidget(glWidget)
 {
     setFixedHeight(30);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -17,4 +19,11 @@ ActionButton::ActionButton(const QString &text, QWidget *parent)
         "  background-color: #5a9fff;"
         "}"
     );
+
+    connect(this, &QPushButton::clicked, [this]() {
+        Panel *panel = qobject_cast<Panel*>(this->parent());
+        if (panel) {
+            panel->triggerSignal(m_glWidget);
+        }
+    });
 }

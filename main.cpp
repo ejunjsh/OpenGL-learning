@@ -3,7 +3,6 @@
 #include <QWidget>
 #include <QHBoxLayout>
 #include "glwidget.h"
-#include "glwidgetex.h"
 #include "panel.h"
 
 int main(int argc, char *argv[])
@@ -24,22 +23,27 @@ int main(int argc, char *argv[])
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
 
-    GLWidget *glWidget = new GLWidget;
-    glWidget->setFixedSize(960, 640);
-    layout->addWidget(glWidget);
-
     Panel *panel = new Panel;
     layout->addWidget(panel, 1);
 
     QObject::connect(panel, &Panel::reloadRequested, [&](GLWidget *newWidget) {
-        delete glWidget;
-        glWidget = newWidget;
-        layout->insertWidget(0, glWidget);
-        glWidget->setFocus();
-        glWidget->setFixedSize(960, 640);
+        for (int i = 0; i < layout->count(); ++i) {
+            QLayoutItem *item = layout->itemAt(i);
+            if (item->widget()) {
+                QWidget *widget = item->widget();
+                GLWidget *glWidget = qobject_cast<GLWidget*>(widget);
+                if (glWidget && glWidget != newWidget) {
+                    layout->removeWidget(glWidget);
+                    glWidget->hide();
+                    qDebug() << "remove widget" << glWidget;
+                }
+            }
+        }
+        layout->insertWidget(0, newWidget);
+        newWidget->show();
+        newWidget->setFocus();
     });
 
     mainWindow.show();
-    glWidget->setFocus();
     return app.exec();
 }

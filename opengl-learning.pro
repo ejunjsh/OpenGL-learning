@@ -5,7 +5,7 @@ CONFIG += C++17
 SOURCES += \
     main.cpp \
     glwidget.cpp \
-    glwidgetex.cpp \
+    gltrianglewidget.cpp \
     panel.cpp \
     actionbutton.cpp \
     camera.cpp \
@@ -14,12 +14,12 @@ SOURCES += \
 
 HEADERS += \
     glwidget.h \
-    glwidgetex.h \
+    gltrianglewidget.h \
     panel.h \
     actionbutton.h \
     camera.h \
     mesh.h \
-    object3d.h 
+    object3d.h
 
 RESOURCES += \
     resources.qrc

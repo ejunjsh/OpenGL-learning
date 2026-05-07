@@ -26,7 +26,6 @@ public:
 protected:
     void initializeGL() override;
     void resizeGL(int w, int h) override;
-    void paintGL() override;
     void enterEvent(QEnterEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
@@ -37,17 +36,13 @@ protected:
 
 private:
     void updateCamera(float dt);
-    void setupScene();
 
-private:
+protected:
     QOpenGLShaderProgram m_program;
-
-    // 使用 Camera 类
     std::unique_ptr<Camera> m_camera;
-
-    // 场景根节点
     std::shared_ptr<Object3D> m_rootObject;
 
+private:
     bool m_firstMouse = true;
     float m_lastX = 0.0f;
     float m_lastY = 0.0f;
