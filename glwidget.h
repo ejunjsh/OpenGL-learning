@@ -22,10 +22,12 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
 public:
     explicit GLWidget(QWidget *parent = nullptr);
     ~GLWidget() override;
+    void setName(const QString &name);
 
 protected:
     void initializeGL() override;
     void resizeGL(int w, int h) override;
+    void resizeEvent(QResizeEvent *event) override;
     void enterEvent(QEnterEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
@@ -52,6 +54,7 @@ private:
     QElapsedTimer m_timer;
     QTimer m_frameTimer;
     QLabel *m_fpsLabel;
+    QLabel *m_nameLabel;
     int m_frameCount = 0;
     QElapsedTimer m_fpsTimer;
 };

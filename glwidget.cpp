@@ -18,6 +18,9 @@ GLWidget::GLWidget(QWidget *parent)
     m_fpsLabel->setText("FPS: 0");
     m_fpsLabel->move(10, 0);
 
+    m_nameLabel = new QLabel(this);
+    m_nameLabel->setStyleSheet("color: white; background: rgba(0,0,0,150); padding: 4px; font-weight: bold;");
+
     m_timer.start();
     m_fpsTimer.start();
     connect(&m_frameTimer, &QTimer::timeout, this, [this]() {
@@ -49,6 +52,13 @@ GLWidget::~GLWidget()
     doneCurrent();
 }
 
+void GLWidget::setName(const QString &name)
+{
+    m_nameLabel->setText(name);
+    m_nameLabel->adjustSize();
+    m_nameLabel->move(width() - m_nameLabel->width() - 10, 0);
+}
+
 void GLWidget::initializeGL()
 {
     initializeOpenGLFunctions();
@@ -57,6 +67,12 @@ void GLWidget::initializeGL()
 void GLWidget::resizeGL(int w, int h)
 {
     glViewport(0, 0, w, h);
+}
+
+void GLWidget::resizeEvent(QResizeEvent *event)
+{
+    m_nameLabel->move(width() - m_nameLabel->width() - 10, 0);
+    QOpenGLWidget::resizeEvent(event);
 }
 
 void GLWidget::mousePressEvent(QMouseEvent *event)

@@ -14,11 +14,15 @@ ActionButton::ActionButton(const QString &text, QWidget *parent, GLWidget *glWid
         "  border: none;"
         "  border-radius: 5px;"
         "  font-size: 14px;"
-        "}"
-        "QPushButton:hover {"
-        "  background-color: #5a9fff;"
-        "}"
+    "}"
+    "QPushButton:hover {"
+    "  background-color: #5a9fff;"
+    "}"
     );
+
+    if (m_glWidget) {
+        m_glWidget->setName(this->text());
+    }
 
     connect(this, &QPushButton::clicked, [this]() {
         Panel *panel = qobject_cast<Panel*>(this->parent());
