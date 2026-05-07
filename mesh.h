@@ -28,8 +28,7 @@ struct Vertex
 struct Texture
 {
     unsigned int id;
-    QString type;  // "texture_diffuse", "texture_specular", etc.
-    QString path;
+    QString name;
 
     Texture() : id(0) {}
 };

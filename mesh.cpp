@@ -105,7 +105,7 @@ void Mesh::draw(QOpenGLShaderProgram &program)
         {
             glActiveTexture(GL_TEXTURE0 + i);
 
-            QString name = m_textures[i].type;
+            QString name = m_textures[i].name;
             program.setUniformValue(name.toUtf8().constData(), static_cast<int>(i));
 
             glBindTexture(GL_TEXTURE_2D, m_textures[i].id);

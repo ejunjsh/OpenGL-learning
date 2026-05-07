@@ -24,4 +24,5 @@ HEADERS += \
     object3d.h
 
 RESOURCES += \
-    resources.qrc
+    textures.qrc \
+    shaders.qrc

@@ -1,7 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>shaders/triangle.vert</file>
-        <file>shaders/triangle.frag</file>
         <file>textures/awesomeface.png</file>
         <file>textures/background.jpg</file>
         <file>textures/block.png</file>
