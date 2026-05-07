@@ -1,4 +1,4 @@
-#include "glwidget.h"
+#include "header/glwidget.h"
 #include <QMatrix4x4>
 #include <QtMath>
 #include <QDebug>

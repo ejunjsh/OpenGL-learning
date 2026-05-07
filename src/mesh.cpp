@@ -1,4 +1,4 @@
-#include "mesh.h"
+#include "header/mesh.h"
 #include <QOpenGLFunctions>
 #include <QOpenGLContext>
 

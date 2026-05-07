@@ -2,8 +2,8 @@
 #include <QSurfaceFormat>
 #include <QWidget>
 #include <QHBoxLayout>
-#include "glwidget.h"
-#include "panel.h"
+#include "header/glwidget.h"
+#include "header/panel.h"
 
 int main(int argc, char *argv[])
 {

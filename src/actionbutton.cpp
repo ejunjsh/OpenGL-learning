@@ -1,5 +1,5 @@
-#include "actionbutton.h"
-#include "panel.h"
+#include "header/actionbutton.h"
+#include "header/panel.h"
 
 ActionButton::ActionButton(const QString &text, QWidget *parent, GLWidget *glWidget)
     : QPushButton(text, parent)

@@ -1,8 +1,8 @@
-#include "panel.h"
-#include "actionbutton.h"
-#include "gltrianglewidget.h"
-#include "gltexturewidget.h"
-#include "gltransformwidget.h"
+#include "header/panel.h"
+#include "header/actionbutton.h"
+#include "header/gltrianglewidget.h"
+#include "header/gltexturewidget.h"
+#include "header/gltransformwidget.h"
 #include <QVBoxLayout>
 #include <QTimer>
 

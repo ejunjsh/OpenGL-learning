@@ -1,5 +1,5 @@
-#include "object3d.h"
-#include "mesh.h"
+#include "header/object3d.h"
+#include "header/mesh.h"
 #include <QQuaternion>
 
 Object3D::Object3D()

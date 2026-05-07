@@ -1,6 +1,6 @@
-#include "gltrianglewidget.h"
+#include "header/gltrianglewidget.h"
 #include <QMatrix4x4>
-#include "mesh.h"
+#include "header/mesh.h"
 
 GLTriangleWidget::GLTriangleWidget(QWidget *parent)
     : GLWidget(parent)

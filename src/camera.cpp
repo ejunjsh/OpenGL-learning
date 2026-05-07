@@ -1,4 +1,4 @@
-#include "camera.h"
+#include "header/camera.h"
 #include <algorithm>
 
 Camera::Camera()

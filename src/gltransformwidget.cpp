@@ -1,6 +1,6 @@
-#include "gltransformwidget.h"
+#include "header/gltransformwidget.h"
 #include <QMatrix4x4>
-#include "mesh.h"
+#include "header/mesh.h"
 
 GLTransformWidget::GLTransformWidget(QWidget *parent)
     : GLWidget(parent)

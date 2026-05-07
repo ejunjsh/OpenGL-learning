@@ -1,8 +1,8 @@
-#include "gltexturewidget.h"
+#include "header/gltexturewidget.h"
 #include <QMatrix4x4>
 #include <QOpenGLFunctions>
 #include <QImage>
-#include "mesh.h"
+#include "header/mesh.h"
 
 GLTextureWidget::GLTextureWidget(QWidget *parent)
     : GLWidget(parent)
