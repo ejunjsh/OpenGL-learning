@@ -35,7 +35,6 @@ int main(int argc, char *argv[])
                 if (glWidget && glWidget != newWidget) {
                     layout->removeWidget(glWidget);
                     glWidget->hide();
-                    qDebug() << "remove widget" << glWidget;
                 }
             }
         }

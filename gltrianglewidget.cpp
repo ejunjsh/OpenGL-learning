@@ -5,6 +5,7 @@
 GLTriangleWidget::GLTriangleWidget(QWidget *parent)
     : GLWidget(parent)
 {
+    setName("GLTriangleWidget");
 }
 
 void GLTriangleWidget::initializeGL()
