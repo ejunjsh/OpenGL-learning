@@ -83,12 +83,6 @@ void GLTransformWidget::setupScene()
 
     auto mesh = std::make_shared<Mesh>(vertices, indices, textures);
 
-    // 绑定纹理到纹理单元
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, containerTex.id);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, faceTex.id);
-
     auto quad = std::make_shared<Object3D>("Quad");
     quad->addMesh(mesh);
 

@@ -77,7 +77,6 @@ void GLTextureWidget::setupScene()
     auto mesh = std::make_shared<Mesh>(vertices, indices, textures);
     auto quad = std::make_shared<Object3D>("Quad");
     quad->addMesh(mesh);
-    quad->setPosition(QVector3D(0.0f, 0.0f, 0.0f));
 
     m_rootObject = std::make_shared<Object3D>("Root");
     m_rootObject->addChild(quad);
