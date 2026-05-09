@@ -1,5 +1,6 @@
 #include "header/gltransformwidget.h"
 #include <QMatrix4x4>
+#include <QOpenGLFunctions>
 #include "header/mesh.h"
 
 GLTransformWidget::GLTransformWidget(QWidget *parent)
@@ -12,15 +13,15 @@ void GLTransformWidget::initializeGL()
 {
     GLWidget::initializeGL();
 
-    if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/transform.vert") ||
-        !m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/transform.frag"))
+    if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/texture.vert") ||
+        !m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/texture.frag"))
     {
-        qFatal("Failed to compile transform shader");
+        qFatal("Failed to compile texture shader");
     }
 
     if (!m_program.link())
     {
-        qFatal("Failed to link transform shader program");
+        qFatal("Failed to link texture shader program");
     }
 
     setupScene();
@@ -42,7 +43,13 @@ void GLTransformWidget::paintGL()
 
     if (m_rootObject)
     {
-        m_program.setUniformValue("uColor", QVector4D(1.0f, 0.5f, 0.2f, 1.0f));
+        // 传递纹理 uniform
+        m_program.setUniformValue("container", 0);
+        m_program.setUniformValue("face", 1);
+
+        m_rootObject->setPosition(QVector3D(0.5f, -0.5f, 0.0f));
+        // 更新旋转角度（使用父类的 elapsedTime）
+        m_rootObject->setRotation(QVector3D(0.0f, 0.0f, elapsedTime() * 45.0f));
         m_rootObject->draw(m_program);
     }
 
@@ -63,33 +70,28 @@ void GLTransformWidget::setupScene()
         1, 2, 3
     };
 
-    auto mesh = std::make_shared<Mesh>(vertices, indices);
+    // 加载纹理
+    Texture containerTex;
+    containerTex.id = loadTexture(":/textures/container.jpg");
+    containerTex.name = "container";
 
-    // 原始位置
-    auto cube = std::make_shared<Object3D>("Cube");
-    cube->addMesh(mesh);
-    cube->setPosition(QVector3D(-1.5f, 0.0f, 0.0f));
+    Texture faceTex;
+    faceTex.id = loadTexture(":/textures/awesomeface.png", true);
+    faceTex.name = "face";
 
-    // 平移
-    auto translated = std::make_shared<Object3D>("Translated");
-    translated->addMesh(mesh);
-    translated->setPosition(QVector3D(1.5f, 0.0f, 0.0f));
+    std::vector<Texture> textures = {containerTex, faceTex};
 
-    // 旋转
-    auto rotated = std::make_shared<Object3D>("Rotated");
-    rotated->addMesh(mesh);
-    rotated->setPosition(QVector3D(0.0f, -1.5f, 0.0f));
-    rotated->setRotation(QVector3D(0.0f, 0.0f, 45.0f));
+    auto mesh = std::make_shared<Mesh>(vertices, indices, textures);
 
-    // 缩放
-    auto scaled = std::make_shared<Object3D>("Scaled");
-    scaled->addMesh(mesh);
-    scaled->setPosition(QVector3D(0.0f, 1.5f, 0.0f));
-    scaled->setScale(QVector3D(1.5f, 1.5f, 1.0f));
+    // 绑定纹理到纹理单元
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, containerTex.id);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, faceTex.id);
+
+    auto quad = std::make_shared<Object3D>("Quad");
+    quad->addMesh(mesh);
 
     m_rootObject = std::make_shared<Object3D>("Root");
-    m_rootObject->addChild(cube);
-    m_rootObject->addChild(translated);
-    m_rootObject->addChild(rotated);
-    m_rootObject->addChild(scaled);
+    m_rootObject->addChild(quad);
 }

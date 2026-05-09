@@ -23,6 +23,7 @@ public:
     explicit GLWidget(QWidget *parent = nullptr);
     ~GLWidget() override;
     void setName(const QString &name);
+    float elapsedTime() const { return m_elapsedTime; }
 
 protected:
     void initializeGL() override;
@@ -45,6 +46,7 @@ protected:
     QOpenGLShaderProgram m_program;
     std::unique_ptr<Camera> m_camera;
     std::shared_ptr<Object3D> m_rootObject;
+    float m_elapsedTime = 0.0f;
 
 private:
     bool m_firstMouse = true;

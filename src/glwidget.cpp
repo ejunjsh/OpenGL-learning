@@ -27,6 +27,7 @@ GLWidget::GLWidget(QWidget *parent)
     connect(&m_frameTimer, &QTimer::timeout, this, [this]() {
         const qint64 ms = m_timer.restart();
         const float dt = static_cast<float>(ms) / 1000.0f;
+        m_elapsedTime += dt;
         updateCamera(dt);
 
         m_frameCount++;
