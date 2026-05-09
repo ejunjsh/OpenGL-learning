@@ -1,5 +1,6 @@
 #include "header/glwidget.h"
 #include <QMatrix4x4>
+#include <QImage>
 #include <QtMath>
 #include <QDebug>
 #include <algorithm>
@@ -67,6 +68,39 @@ void GLWidget::initializeGL()
 void GLWidget::resizeGL(int w, int h)
 {
     glViewport(0, 0, w, h);
+}
+
+unsigned int GLWidget::loadTexture(const QString &path, bool flipVertically, bool flipHorizontally)
+{
+    QImage image(path);
+    if (image.isNull()) {
+        qWarning() << "Failed to load texture:" << path;
+        return 0;
+    }
+    image = image.convertToFormat(QImage::Format_RGBA8888);
+
+    if (flipVertically) {
+        image = image.mirrored(false, true);
+    }
+    if (flipHorizontally) {
+        image = image.mirrored(true, false);
+    }
+
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width(), image.height(),
+                 0, GL_RGBA, GL_UNSIGNED_BYTE, image.bits());
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    return textureID;
 }
 
 void GLWidget::resizeEvent(QResizeEvent *event)

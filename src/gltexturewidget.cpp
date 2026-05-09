@@ -1,45 +1,12 @@
 #include "header/gltexturewidget.h"
 #include <QMatrix4x4>
 #include <QOpenGLFunctions>
-#include <QImage>
 #include "header/mesh.h"
 
 GLTextureWidget::GLTextureWidget(QWidget *parent)
     : GLWidget(parent)
 {
     setName("GLTextureWidget");
-}
-
-unsigned int GLTextureWidget::loadTexture(const QString &path, bool flipVertically, bool flipHorizontally)
-{
-    QImage image(path);
-    if (image.isNull()) {
-        qWarning() << "Failed to load texture:" << path;
-        return 0;
-    }
-    image = image.convertToFormat(QImage::Format_RGBA8888);
-
-    if (flipVertically) {
-        image = image.mirrored(false, true);  // 垂直翻转
-    }
-    if (flipHorizontally) {
-        image = image.mirrored(true, false);   // 水平翻转
-    }
-
-    unsigned int textureID;
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width(), image.height(),
-                 0, GL_RGBA, GL_UNSIGNED_BYTE, image.bits());
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    return textureID;
 }
 
 void GLTextureWidget::initializeGL()

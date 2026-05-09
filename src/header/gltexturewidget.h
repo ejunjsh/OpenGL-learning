@@ -14,5 +14,4 @@ protected:
 
 private:
     void setupScene();
-    unsigned int loadTexture(const QString &path, bool flipVertically = false, bool flipHorizontally = false);
 };

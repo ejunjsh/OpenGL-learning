@@ -27,6 +27,8 @@ public:
 protected:
     void initializeGL() override;
     void resizeGL(int w, int h) override;
+
+    unsigned int loadTexture(const QString &path, bool flipVertically = false, bool flipHorizontally = false);
     void resizeEvent(QResizeEvent *event) override;
     void enterEvent(QEnterEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
