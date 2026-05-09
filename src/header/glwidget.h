@@ -10,6 +10,8 @@
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QEvent>
+#include <QHideEvent>
+#include <QShowEvent>
 #include <QLabel>
 #include <memory>
 
@@ -24,6 +26,8 @@ public:
     ~GLWidget() override;
     void setName(const QString &name);
     float elapsedTime() const { return m_elapsedTime; }
+    void stopRendering();
+    void startRendering();
 
 protected:
     void initializeGL() override;
@@ -38,6 +42,8 @@ protected:
     void leaveEvent(QEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
     void keyReleaseEvent(QKeyEvent *event) override;
+    void hideEvent(QHideEvent *event) override;
+    void showEvent(QShowEvent *event) override;
 
 private:
     void updateCamera(float dt);

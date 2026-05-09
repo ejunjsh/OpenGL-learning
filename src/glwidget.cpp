@@ -22,8 +22,6 @@ GLWidget::GLWidget(QWidget *parent)
     m_nameLabel = new QLabel(this);
     m_nameLabel->setStyleSheet("color: white; background: rgba(0,0,0,150); padding: 4px; font-weight: bold;");
 
-    m_timer.start();
-    m_fpsTimer.start();
     connect(&m_frameTimer, &QTimer::timeout, this, [this]() {
         const qint64 ms = m_timer.restart();
         const float dt = static_cast<float>(ms) / 1000.0f;
@@ -41,8 +39,6 @@ GLWidget::GLWidget(QWidget *parent)
 
         update();
     });
-
-    m_frameTimer.start(16);
 
     setFixedSize(960, 640);
 }
@@ -187,6 +183,18 @@ void GLWidget::keyReleaseEvent(QKeyEvent *event)
     QOpenGLWidget::keyReleaseEvent(event);
 }
 
+void GLWidget::hideEvent(QHideEvent *event)
+{
+    stopRendering();
+    QOpenGLWidget::hideEvent(event);
+}
+
+void GLWidget::showEvent(QShowEvent *event)
+{
+    startRendering();
+    QOpenGLWidget::showEvent(event);
+}
+
 void GLWidget::updateCamera(float dt)
 {
     // Shift 键加速
@@ -195,4 +203,20 @@ void GLWidget::updateCamera(float dt)
 
     // 使用 Camera 类处理键盘输入
     m_camera->processKeyboard(m_keys, dt);
+}
+
+void GLWidget::stopRendering()
+{
+    m_timer.invalidate();
+    m_fpsTimer.invalidate();
+    m_frameTimer.stop();
+}
+
+void GLWidget::startRendering()
+{
+    if (!m_frameTimer.isActive()) {
+        m_timer.restart();
+        m_fpsTimer.restart();
+        m_frameTimer.start(16);
+    }
 }
