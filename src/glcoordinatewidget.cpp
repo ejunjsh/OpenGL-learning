@@ -1,15 +1,15 @@
-#include "header/gltransformwidget.h"
+#include "header/glcoordinatewidget.h"
 #include <QMatrix4x4>
 #include <QOpenGLFunctions>
 #include "header/mesh.h"
 
-GLTransformWidget::GLTransformWidget(QWidget *parent)
+GLCoordinateWidget::GLCoordinateWidget(QWidget *parent)
     : GLWidget(parent)
 {
-    setName("GLTransformWidget");
+    setName("GLCoordinateWidget");
 }
 
-void GLTransformWidget::initializeGL()
+void GLCoordinateWidget::initializeGL()
 {
     GLWidget::initializeGL();
 
@@ -27,7 +27,7 @@ void GLTransformWidget::initializeGL()
     setupScene();
 }
 
-void GLTransformWidget::paintGL()
+void GLCoordinateWidget::paintGL()
 {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -52,7 +52,7 @@ void GLTransformWidget::paintGL()
     m_program.release();
 }
 
-void GLTransformWidget::setupScene()
+void GLCoordinateWidget::setupScene()
 {
     std::vector<Vertex> vertices = {
         Vertex(QVector3D(0.5f, 0.5f, 0.0f), QVector2D(1.0f, 1.0f)),
