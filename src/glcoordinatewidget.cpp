@@ -1,6 +1,7 @@
 #include "header/glcoordinatewidget.h"
 #include <QMatrix4x4>
 #include <QOpenGLFunctions>
+#include <QRandomGenerator>
 #include "header/mesh.h"
 
 GLCoordinateWidget::GLCoordinateWidget(QWidget *parent)
@@ -30,7 +31,7 @@ void GLCoordinateWidget::initializeGL()
 void GLCoordinateWidget::paintGL()
 {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
 
     const float aspect = static_cast<float>(width()) / height();
@@ -43,9 +44,18 @@ void GLCoordinateWidget::paintGL()
 
     if (m_rootObject)
     {
-        m_rootObject->setPosition(QVector3D(0.5f, -0.5f, 0.0f));
-        // 更新旋转角度（使用父类的 elapsedTime）
-        m_rootObject->setRotation(QVector3D(0.0f, 0.0f, elapsedTime() * 45.0f));
+        // 每个立方体随时间独立旋转（相同转速，固定方向）
+        const auto &children = m_rootObject->getChildren();
+        const float speed = 30.0f;  // 统一转速
+        for (size_t i = 0; i < children.size(); ++i) {
+            auto cube = children[i];
+            const QVector3D &dir = m_rotationDirections[i];
+            cube->setRotation(QVector3D(
+                elapsedTime() * speed * dir.x(),
+                elapsedTime() * speed * dir.y(),
+                elapsedTime() * speed * dir.z()
+            ));
+        }
         m_rootObject->draw(m_program);
     }
 
@@ -54,17 +64,59 @@ void GLCoordinateWidget::paintGL()
 
 void GLCoordinateWidget::setupScene()
 {
-    std::vector<Vertex> vertices = {
-        Vertex(QVector3D(0.5f, 0.5f, 0.0f), QVector2D(1.0f, 1.0f)),
-        Vertex(QVector3D(0.5f, -0.5f, 0.0f), QVector2D(1.0f, 0.0f)),
-        Vertex(QVector3D(-0.5f, -0.5f, 0.0f), QVector2D(0.0f, 0.0f)),
-        Vertex(QVector3D(-0.5f, 0.5f, 0.0f), QVector2D(0.0f, 1.0f))
+    // 立方体顶点数据（位置 + 纹理坐标）
+    std::vector<Vertex> meshVertices = {
+        // 背面
+        Vertex(QVector3D(-0.5f, -0.5f, -0.5f), QVector2D(0.0f, 0.0f)),
+        Vertex(QVector3D( 0.5f, -0.5f, -0.5f), QVector2D(1.0f, 0.0f)),
+        Vertex(QVector3D( 0.5f,  0.5f, -0.5f), QVector2D(1.0f, 1.0f)),
+        Vertex(QVector3D( 0.5f,  0.5f, -0.5f), QVector2D(1.0f, 1.0f)),
+        Vertex(QVector3D(-0.5f,  0.5f, -0.5f), QVector2D(0.0f, 1.0f)),
+        Vertex(QVector3D(-0.5f, -0.5f, -0.5f), QVector2D(0.0f, 0.0f)),
+
+        // 正面
+        Vertex(QVector3D(-0.5f, -0.5f,  0.5f), QVector2D(0.0f, 0.0f)),
+        Vertex(QVector3D( 0.5f, -0.5f,  0.5f), QVector2D(1.0f, 0.0f)),
+        Vertex(QVector3D( 0.5f,  0.5f,  0.5f), QVector2D(1.0f, 1.0f)),
+        Vertex(QVector3D( 0.5f,  0.5f,  0.5f), QVector2D(1.0f, 1.0f)),
+        Vertex(QVector3D(-0.5f,  0.5f,  0.5f), QVector2D(0.0f, 1.0f)),
+        Vertex(QVector3D(-0.5f, -0.5f,  0.5f), QVector2D(0.0f, 0.0f)),
+
+        // 左面
+        Vertex(QVector3D(-0.5f,  0.5f,  0.5f), QVector2D(1.0f, 0.0f)),
+        Vertex(QVector3D(-0.5f,  0.5f, -0.5f), QVector2D(1.0f, 1.0f)),
+        Vertex(QVector3D(-0.5f, -0.5f, -0.5f), QVector2D(0.0f, 1.0f)),
+        Vertex(QVector3D(-0.5f, -0.5f, -0.5f), QVector2D(0.0f, 1.0f)),
+        Vertex(QVector3D(-0.5f, -0.5f,  0.5f), QVector2D(0.0f, 0.0f)),
+        Vertex(QVector3D(-0.5f,  0.5f,  0.5f), QVector2D(1.0f, 0.0f)),
+
+        // 右面
+        Vertex(QVector3D( 0.5f,  0.5f,  0.5f), QVector2D(1.0f, 0.0f)),
+        Vertex(QVector3D( 0.5f,  0.5f, -0.5f), QVector2D(1.0f, 1.0f)),
+        Vertex(QVector3D( 0.5f, -0.5f, -0.5f), QVector2D(0.0f, 1.0f)),
+        Vertex(QVector3D( 0.5f, -0.5f, -0.5f), QVector2D(0.0f, 1.0f)),
+        Vertex(QVector3D( 0.5f, -0.5f,  0.5f), QVector2D(0.0f, 0.0f)),
+        Vertex(QVector3D( 0.5f,  0.5f,  0.5f), QVector2D(1.0f, 0.0f)),
+
+        // 下面
+        Vertex(QVector3D(-0.5f, -0.5f, -0.5f), QVector2D(0.0f, 1.0f)),
+        Vertex(QVector3D( 0.5f, -0.5f, -0.5f), QVector2D(1.0f, 1.0f)),
+        Vertex(QVector3D( 0.5f, -0.5f,  0.5f), QVector2D(1.0f, 0.0f)),
+        Vertex(QVector3D( 0.5f, -0.5f,  0.5f), QVector2D(1.0f, 0.0f)),
+        Vertex(QVector3D(-0.5f, -0.5f,  0.5f), QVector2D(0.0f, 0.0f)),
+        Vertex(QVector3D(-0.5f, -0.5f, -0.5f), QVector2D(0.0f, 1.0f)),
+
+        // 上面
+        Vertex(QVector3D(-0.5f,  0.5f, -0.5f), QVector2D(0.0f, 1.0f)),
+        Vertex(QVector3D( 0.5f,  0.5f, -0.5f), QVector2D(1.0f, 1.0f)),
+        Vertex(QVector3D( 0.5f,  0.5f,  0.5f), QVector2D(1.0f, 0.0f)),
+        Vertex(QVector3D( 0.5f,  0.5f,  0.5f), QVector2D(1.0f, 0.0f)),
+        Vertex(QVector3D(-0.5f,  0.5f,  0.5f), QVector2D(0.0f, 0.0f)),
+        Vertex(QVector3D(-0.5f,  0.5f, -0.5f), QVector2D(0.0f, 1.0f))
     };
 
-    std::vector<unsigned int> indices = {
-        0, 1, 3,
-        1, 2, 3
-    };
+    // 立方体不需要索引
+    std::vector<unsigned int> indices;
 
     // 加载纹理
     Texture containerTex;
@@ -77,11 +129,34 @@ void GLCoordinateWidget::setupScene()
 
     std::vector<Texture> textures = {containerTex, faceTex};
 
-    auto mesh = std::make_shared<Mesh>(vertices, indices, textures);
-
-    auto quad = std::make_shared<Object3D>("Quad");
-    quad->addMesh(mesh);
+    auto mesh = std::make_shared<Mesh>(meshVertices, indices, textures);
 
     m_rootObject = std::make_shared<Object3D>("Root");
-    m_rootObject->addChild(quad);
+    m_rotationDirections.clear();
+
+    // 创建100个立方体，随机位置分布在摄像头前方
+    for (int i = 0; i < 100; i++) {
+        auto cube = std::make_shared<Object3D>(QString("Cube%1").arg(i));
+        cube->addMesh(mesh);
+
+        // 随机位置：在摄像头前方 (z: -2 到 -15), x: -20 到 20, y: -15 到 15
+        int x = QRandomGenerator::global()->bounded(-20, 20);
+        int y = QRandomGenerator::global()->bounded(-15, 15);
+        int z = QRandomGenerator::global()->bounded(-15, -2);
+        cube->setPosition(QVector3D(x, y, z));
+
+        // 每个立方体有独立的随机初始旋转
+        float rotX = QRandomGenerator::global()->bounded(360);
+        float rotY = QRandomGenerator::global()->bounded(360);
+        float rotZ = QRandomGenerator::global()->bounded(360);
+        cube->setRotation(QVector3D(rotX, rotY, rotZ));
+
+        // 生成固定旋转方向
+        float dirX = (QRandomGenerator::global()->bounded(0, 201) - 100) / 100.0f;
+        float dirY = (QRandomGenerator::global()->bounded(0, 201) - 100) / 100.0f;
+        float dirZ = (QRandomGenerator::global()->bounded(0, 201) - 100) / 100.0f;
+        m_rotationDirections.append(QVector3D(dirX, dirY, dirZ));
+
+        m_rootObject->addChild(cube);
+    }
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "glwidget.h"
+#include <QVector3D>
 
 class GLCoordinateWidget : public GLWidget
 {
@@ -14,4 +15,5 @@ protected:
 
 private:
     void setupScene();
+    QVector<QVector3D> m_rotationDirections;  // 每个立方体的固定旋转方向
 };
