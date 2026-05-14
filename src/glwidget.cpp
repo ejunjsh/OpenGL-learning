@@ -88,20 +88,20 @@ void GLWidget::toggleMenu()
 bool GLWidget::eventFilter(QObject *obj, QEvent *event)
 {
     if (event->type() == QEvent::MouseButtonPress) {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
-        QPoint pos = mouseEvent->pos();
-
         if (obj == m_menuButton) {
             toggleMenu();
             return true;
         } else if (m_menuVisible) {
-            QRect menuRect = m_menuPanel->rect().translated(m_menuPanel->pos());
-            // 点击菜单面板内部，不关闭
-            if (menuRect.contains(pos)) {
-                return false;
+            // 使用全局坐标判断点击位置是否在菜单面板内
+            QPoint globalPos = QCursor::pos();
+            QPoint localPos = m_menuPanel->mapFromGlobal(globalPos);
+            QRect menuRect = m_menuPanel->rect();
+            if (menuRect.contains(localPos)) {
+                return false;  // 点击菜单内部，不关闭
             }
             // 点击其他区域，关闭菜单
             toggleMenu();
+            return true;
         }
     } else if (event->type() == QEvent::Enter || event->type() == QEvent::Leave) {
         if (obj == m_menuButton) {
@@ -112,7 +112,7 @@ bool GLWidget::eventFilter(QObject *obj, QEvent *event)
             }
         }
     }
-    return QOpenGLWidget::eventFilter(obj, event);
+    return QObject::eventFilter(obj, event);
 }
 
 void GLWidget::initializeGL()

@@ -2,12 +2,43 @@
 #include <QMatrix4x4>
 #include <QOpenGLFunctions>
 #include <QRandomGenerator>
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QPushButton>
+#include <climits>
 #include "header/mesh.h"
 
 GLCoordinateWidget::GLCoordinateWidget(QWidget *parent)
     : GLWidget(parent)
 {
     setName("GLCoordinateWidget");
+
+    // 添加立方体数量输入框到菜单面板
+    QVBoxLayout *layout = new QVBoxLayout(getMenuPanel());
+    layout->setContentsMargins(10, 10, 10, 10);
+
+    QLabel *label = new QLabel("立方体数量:", getMenuPanel());
+    label->setStyleSheet("color: white;");
+    layout->addWidget(label);
+
+    m_cubeCountSpinBox = new QSpinBox(getMenuPanel());
+    m_cubeCountSpinBox->setMaximum(INT_MAX);
+    m_cubeCountSpinBox->setValue(100);
+    m_cubeCountSpinBox->setStyleSheet("color: white; background: rgba(50,50,50,200);");
+    layout->addWidget(m_cubeCountSpinBox);
+
+    QPushButton *btn = new QPushButton("生成", getMenuPanel());
+    btn->setStyleSheet("color: white; background: rgba(80,80,80,200);");
+    layout->addWidget(btn);
+
+    layout->addStretch();
+    getMenuPanel()->setLayout(layout);
+
+    connect(btn, &QPushButton::clicked, this, [this]() {
+        makeCurrent();
+        setupScene(m_cubeCountSpinBox->value());
+        doneCurrent();
+    });
 }
 
 void GLCoordinateWidget::initializeGL()
@@ -25,7 +56,7 @@ void GLCoordinateWidget::initializeGL()
         qFatal("Failed to link texture shader program");
     }
 
-    setupScene();
+    setupScene(m_cubeCountSpinBox->value());
 }
 
 void GLCoordinateWidget::paintGL()
@@ -62,7 +93,7 @@ void GLCoordinateWidget::paintGL()
     m_program.release();
 }
 
-void GLCoordinateWidget::setupScene()
+void GLCoordinateWidget::setupScene(int cubeCount)
 {
     // 立方体顶点数据（位置 + 纹理坐标）
     std::vector<Vertex> meshVertices = {
@@ -134,8 +165,8 @@ void GLCoordinateWidget::setupScene()
     m_rootObject = std::make_shared<Object3D>("Root");
     m_rotationDirections.clear();
 
-    // 创建100个立方体，随机位置分布在摄像头前方
-    for (int i = 0; i < 100; i++) {
+    // 创建立方体，随机位置分布在摄像头前方
+    for (int i = 0; i < cubeCount; i++) {
         auto cube = std::make_shared<Object3D>(QString("Cube%1").arg(i));
         cube->addMesh(mesh);
 

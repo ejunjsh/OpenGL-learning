@@ -76,4 +76,7 @@ private:
     QLabel *m_menuButton;
     QFrame *m_menuPanel;
     bool m_menuVisible = false;
+
+protected:
+    QFrame *getMenuPanel() const { return m_menuPanel; }  // 供子类访问菜单面板
 };
