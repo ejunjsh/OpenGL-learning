@@ -9,6 +9,7 @@
 GLWidget::GLWidget(QWidget *parent)
     : QOpenGLWidget(parent)
     , m_camera(std::make_unique<Camera>())
+    , m_menuVisible(false)
 {
     setMouseTracking(true);
     setFocusPolicy(Qt::StrongFocus);
@@ -21,6 +22,22 @@ GLWidget::GLWidget(QWidget *parent)
 
     m_nameLabel = new QLabel(this);
     m_nameLabel->setStyleSheet("color: white; background: rgba(0,0,0,150); padding: 4px; font-weight: bold;");
+
+    // 右上角菜单按钮
+    m_menuButton = new QLabel(this);
+    m_menuButton->setText("☰");
+    m_menuButton->setStyleSheet("color: white; background: rgba(0,0,0,150); padding: 4px 8px; font-size: 16px;");
+    m_menuButton->setFixedSize(30, 24);
+    m_menuButton->setAlignment(Qt::AlignCenter);
+    m_menuButton->setCursor(Qt::PointingHandCursor);
+
+    qApp->installEventFilter(this);  // 全局安装，捕获所有事件
+
+    // 透明下拉面板
+    m_menuPanel = new QFrame(this);
+    m_menuPanel->setStyleSheet("background: rgba(0,0,0,180); border: 1px solid rgba(255,255,255,50);");
+    m_menuPanel->setFixedSize(200, 300);
+    m_menuPanel->hide();
 
     connect(&m_frameTimer, &QTimer::timeout, this, [this]() {
         const qint64 ms = m_timer.restart();
@@ -54,7 +71,48 @@ void GLWidget::setName(const QString &name)
 {
     m_nameLabel->setText(name);
     m_nameLabel->adjustSize();
-    m_nameLabel->move(width() - m_nameLabel->width() - 10, 0);
+    m_nameLabel->move(width() - m_nameLabel->width() - m_menuButton->width() - 15, 0);
+}
+
+void GLWidget::toggleMenu()
+{
+    m_menuVisible = !m_menuVisible;
+    if (m_menuVisible) {
+        m_menuPanel->move(width() - m_menuPanel->width() - 10, 24);
+        m_menuPanel->show();
+    } else {
+        m_menuPanel->hide();
+    }
+}
+
+bool GLWidget::eventFilter(QObject *obj, QEvent *event)
+{
+    if (event->type() == QEvent::MouseButtonPress) {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+        QPoint pos = mouseEvent->pos();
+
+        if (obj == m_menuButton) {
+            toggleMenu();
+            return true;
+        } else if (m_menuVisible) {
+            QRect menuRect = m_menuPanel->rect().translated(m_menuPanel->pos());
+            // 点击菜单面板内部，不关闭
+            if (menuRect.contains(pos)) {
+                return false;
+            }
+            // 点击其他区域，关闭菜单
+            toggleMenu();
+        }
+    } else if (event->type() == QEvent::Enter || event->type() == QEvent::Leave) {
+        if (obj == m_menuButton) {
+            if (event->type() == QEvent::Enter) {
+                m_menuButton->setStyleSheet("color: white; background: rgba(80,80,80,200); padding: 4px 8px; font-size: 16px;");
+            } else {
+                m_menuButton->setStyleSheet("color: white; background: rgba(0,0,0,150); padding: 4px 8px; font-size: 16px;");
+            }
+        }
+    }
+    return QOpenGLWidget::eventFilter(obj, event);
 }
 
 void GLWidget::initializeGL()
@@ -102,7 +160,11 @@ unsigned int GLWidget::loadTexture(const QString &path, bool flipVertically, boo
 
 void GLWidget::resizeEvent(QResizeEvent *event)
 {
-    m_nameLabel->move(width() - m_nameLabel->width() - 10, 0);
+    m_nameLabel->move(width() - m_nameLabel->width() - m_menuButton->width(), 0);
+    m_menuButton->move(width() - m_menuButton->width() - 5, 0);
+    if (m_menuVisible) {
+        m_menuPanel->move(width() - m_menuPanel->width() - 5, 24);
+    }
     QOpenGLWidget::resizeEvent(event);
 }
 

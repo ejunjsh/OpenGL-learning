@@ -13,6 +13,8 @@
 #include <QHideEvent>
 #include <QShowEvent>
 #include <QLabel>
+#include <QFrame>
+#include <QPushButton>
 #include <memory>
 
 #include "camera.h"
@@ -44,9 +46,11 @@ protected:
     void keyReleaseEvent(QKeyEvent *event) override;
     void hideEvent(QHideEvent *event) override;
     void showEvent(QShowEvent *event) override;
+    bool eventFilter(QObject *obj, QEvent *event) override;
 
 private:
     void updateCamera(float dt);
+    void toggleMenu();
 
 protected:
     QOpenGLShaderProgram m_program;
@@ -67,4 +71,9 @@ private:
     QLabel *m_nameLabel;
     int m_frameCount = 0;
     QElapsedTimer m_fpsTimer;
+
+    // 右上角菜单
+    QLabel *m_menuButton;
+    QFrame *m_menuPanel;
+    bool m_menuVisible = false;
 };
