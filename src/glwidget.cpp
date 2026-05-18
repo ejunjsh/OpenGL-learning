@@ -3,6 +3,7 @@
 #include <QImage>
 #include <QtMath>
 #include <QDebug>
+#include <QVBoxLayout>
 #include <algorithm>
 #include <cmath>
 
@@ -38,6 +39,26 @@ GLWidget::GLWidget(QWidget *parent)
     m_menuPanel->setStyleSheet("background: rgba(0,0,0,180); border: 1px solid rgba(255,255,255,50);");
     m_menuPanel->setFixedSize(200, 300);
     m_menuPanel->hide();
+
+    // 右下角帮助按钮
+    m_helpButton = new QLabel(this);
+    m_helpButton->setText("?");
+    m_helpButton->setStyleSheet("color: white; background: rgba(0,0,0,150); padding: 2px 6px; font-size: 14px; font-weight: bold;");
+    m_helpButton->setFixedSize(20, 20);
+    m_helpButton->setAlignment(Qt::AlignCenter);
+    m_helpButton->setCursor(Qt::PointingHandCursor);
+
+    // 帮助面板
+    m_helpPanel = new QFrame(this);
+    m_helpPanel->setStyleSheet("background: rgba(0,0,0,200); border: 1px solid rgba(255,255,255,50);");
+    m_helpPanel->setFixedSize(170, 150);
+    m_helpPanel->hide();
+
+    QVBoxLayout *helpLayout = new QVBoxLayout(m_helpPanel);
+    QLabel *helpLabel = new QLabel(getHelpText(), m_helpPanel);
+    helpLabel->setStyleSheet("QLabel { border: none; color: white; font-size: 12px; background: transparent; }");
+    helpLabel->setWordWrap(true);
+    helpLayout->addWidget(helpLabel);
 
     connect(&m_frameTimer, &QTimer::timeout, this, [this]() {
         const qint64 ms = m_timer.restart();
@@ -85,22 +106,53 @@ void GLWidget::toggleMenu()
     }
 }
 
+void GLWidget::toggleHelp()
+{
+    m_helpVisible = !m_helpVisible;
+    if (m_helpVisible) {
+        m_helpPanel->move(width() - m_helpPanel->width() - 5, height() - m_helpPanel->height() - 5);
+        m_helpPanel->show();
+    } else {
+        m_helpPanel->hide();
+    }
+}
+
+QString GLWidget::getHelpText() const
+{
+    return "Mouse drag: Rotate view\n"
+           "W/A/S/D: Move\n"
+           "Space: Move up\n"
+           "Ctrl: Move down\n"
+           "Shift: Speed up\n"
+           "ESC: Exit";
+}
+
 bool GLWidget::eventFilter(QObject *obj, QEvent *event)
 {
     if (event->type() == QEvent::MouseButtonPress) {
         if (obj == m_menuButton) {
             toggleMenu();
             return true;
+        } else if (obj == m_helpButton) {
+            toggleHelp();
+            return true;
         } else if (m_menuVisible) {
-            // 使用全局坐标判断点击位置是否在菜单面板内
             QPoint globalPos = QCursor::pos();
             QPoint localPos = m_menuPanel->mapFromGlobal(globalPos);
             QRect menuRect = m_menuPanel->rect();
             if (menuRect.contains(localPos)) {
-                return false;  // 点击菜单内部，不关闭
+                return false;
             }
-            // 点击其他区域，关闭菜单
             toggleMenu();
+            return true;
+        } else if (m_helpVisible) {
+            QPoint globalPos = QCursor::pos();
+            QPoint localPos = m_helpPanel->mapFromGlobal(globalPos);
+            QRect helpRect = m_helpPanel->rect();
+            if (helpRect.contains(localPos)) {
+                return false;
+            }
+            toggleHelp();
             return true;
         }
     } else if (event->type() == QEvent::Enter || event->type() == QEvent::Leave) {
@@ -109,6 +161,12 @@ bool GLWidget::eventFilter(QObject *obj, QEvent *event)
                 m_menuButton->setStyleSheet("color: white; background: rgba(80,80,80,200); padding: 4px 8px; font-size: 16px;");
             } else {
                 m_menuButton->setStyleSheet("color: white; background: rgba(0,0,0,150); padding: 4px 8px; font-size: 16px;");
+            }
+        } else if (obj == m_helpButton) {
+            if (event->type() == QEvent::Enter) {
+                m_helpButton->setStyleSheet("color: white; background: rgba(80,80,80,200); padding: 2px 6px; font-size: 14px; font-weight: bold;");
+            } else {
+                m_helpButton->setStyleSheet("color: white; background: rgba(0,0,0,150); padding: 2px 6px; font-size: 14px; font-weight: bold;");
             }
         }
     }
@@ -162,8 +220,12 @@ void GLWidget::resizeEvent(QResizeEvent *event)
 {
     m_nameLabel->move(width() - m_nameLabel->width() - m_menuButton->width(), 0);
     m_menuButton->move(width() - m_menuButton->width() - 5, 0);
+    m_helpButton->move(width() - m_helpButton->width() - 5, height() - m_helpButton->height() - 5);
     if (m_menuVisible) {
         m_menuPanel->move(width() - m_menuPanel->width() - 5, 24);
+    }
+    if (m_helpVisible) {
+        m_helpPanel->move(width() - m_helpPanel->width() - 5, height() - m_helpPanel->height() - 5);
     }
     QOpenGLWidget::resizeEvent(event);
 }

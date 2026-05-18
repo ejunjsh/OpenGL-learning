@@ -77,6 +77,13 @@ private:
     QFrame *m_menuPanel;
     bool m_menuVisible = false;
 
+    // 右下角帮助
+    QLabel *m_helpButton;
+    QFrame *m_helpPanel;
+    bool m_helpVisible = false;
+    void toggleHelp();
+
 protected:
-    QFrame *getMenuPanel() const { return m_menuPanel; }  // 供子类访问菜单面板
+    QFrame *getMenuPanel() const { return m_menuPanel; }
+    virtual QString getHelpText() const;
 };
