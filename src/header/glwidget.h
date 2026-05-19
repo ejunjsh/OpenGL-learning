@@ -76,6 +76,7 @@ private:
     QLabel *m_menuButton;
     QFrame *m_menuPanel;
     bool m_menuVisible = false;
+    bool m_hasMenuContent = false;
 
     // 右下角帮助
     QLabel *m_helpButton;

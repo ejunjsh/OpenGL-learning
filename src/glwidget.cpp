@@ -92,7 +92,6 @@ void GLWidget::setName(const QString &name)
 {
     m_nameLabel->setText(name);
     m_nameLabel->adjustSize();
-    m_nameLabel->move(width() - m_nameLabel->width() - m_menuButton->width() - 15, 0);
 }
 
 void GLWidget::toggleMenu()
@@ -218,7 +217,19 @@ unsigned int GLWidget::loadTexture(const QString &path, bool flipVertically, boo
 
 void GLWidget::resizeEvent(QResizeEvent *event)
 {
-    m_nameLabel->move(width() - m_nameLabel->width() - m_menuButton->width(), 0);
+
+    m_hasMenuContent = m_menuPanel->layout() && m_menuPanel->layout()->count() > 0;
+    if (m_hasMenuContent) {
+        m_menuButton->show();
+    } else {
+        m_menuButton->hide();
+    }
+    
+    if (m_hasMenuContent) {
+        m_nameLabel->move(width() - m_nameLabel->width() - m_menuButton->width() - 5, 0);
+    } else {
+        m_nameLabel->move(width() - m_nameLabel->width() - 10, 0);
+    }
     m_menuButton->move(width() - m_menuButton->width() - 5, 0);
     m_helpButton->move(width() - m_helpButton->width() - 5, height() - m_helpButton->height() - 5);
     if (m_menuVisible) {
