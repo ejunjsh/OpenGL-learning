@@ -268,6 +268,13 @@ void GLWidget::leaveEvent(QEvent *event)
     QOpenGLWidget::leaveEvent(event);
 }
 
+void GLWidget::wheelEvent(QWheelEvent *event)
+{
+    const float delta = event->angleDelta().y() / 120.0f;
+    m_camera->processMouseScroll(delta);
+    QOpenGLWidget::wheelEvent(event);
+}
+
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
     if (!m_mousePressed)
