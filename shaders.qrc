@@ -2,6 +2,7 @@
     <qresource prefix="/">
         <file>shaders/triangle.vert</file>
         <file>shaders/triangle.frag</file>
+        <file>shaders/triangle1.frag</file>
         <file>shaders/texture.vert</file>
         <file>shaders/texture.frag</file>
     </qresource>
