@@ -1,8 +1,8 @@
 #pragma once
 
-#include "glwidget.h"
+#include "glcamerawidget.h"
 
-class GLTriangleWidget : public GLWidget
+class GLTriangleWidget : public GLCameraWidget
 {
     Q_OBJECT
 public:

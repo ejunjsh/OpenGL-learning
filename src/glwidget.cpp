@@ -9,7 +9,6 @@
 
 GLWidget::GLWidget(QWidget *parent)
     : QOpenGLWidget(parent)
-    , m_camera(std::make_unique<Camera>())
     , m_menuVisible(false)
 {
     setMouseTracking(true);
@@ -55,10 +54,10 @@ GLWidget::GLWidget(QWidget *parent)
     m_helpPanel->hide();
 
     QVBoxLayout *helpLayout = new QVBoxLayout(m_helpPanel);
-    QLabel *helpLabel = new QLabel(getHelpText(), m_helpPanel);
-    helpLabel->setStyleSheet("QLabel { border: none; color: white; font-size: 12px; background: transparent; }");
-    helpLabel->setWordWrap(true);
-    helpLayout->addWidget(helpLabel);
+    m_helpLabel = new QLabel(this);
+    m_helpLabel->setStyleSheet("QLabel { border: none; color: white; font-size: 12px; background: transparent; }");
+    m_helpLabel->setWordWrap(true);
+    helpLayout->addWidget(m_helpLabel);
 
     connect(&m_frameTimer, &QTimer::timeout, this, [this]() {
         const qint64 ms = m_timer.restart();
@@ -109,6 +108,7 @@ void GLWidget::toggleHelp()
 {
     m_helpVisible = !m_helpVisible;
     if (m_helpVisible) {
+        m_helpLabel->setText(getHelpText());
         m_helpPanel->move(width() - m_helpPanel->width() - 5, height() - m_helpPanel->height() - 5);
         m_helpPanel->show();
     } else {
@@ -118,13 +118,7 @@ void GLWidget::toggleHelp()
 
 QString GLWidget::getHelpText() const
 {
-    return "Mouse drag: Rotate view\n"
-           "Scroll: Zoom\n"
-           "W/A/S/D: Move\n"
-           "Space: Move up\n"
-           "Ctrl: Move down\n"
-           "Shift: Speed up\n"
-           "ESC: Exit";
+    return "Basic OpenGL Widget";
 }
 
 bool GLWidget::eventFilter(QObject *obj, QEvent *event)
@@ -218,14 +212,13 @@ unsigned int GLWidget::loadTexture(const QString &path, bool flipVertically, boo
 
 void GLWidget::resizeEvent(QResizeEvent *event)
 {
-
     m_hasMenuContent = m_menuPanel->layout() && m_menuPanel->layout()->count() > 0;
     if (m_hasMenuContent) {
         m_menuButton->show();
     } else {
         m_menuButton->hide();
     }
-    
+
     if (m_hasMenuContent) {
         m_nameLabel->move(width() - m_nameLabel->width() - m_menuButton->width() - 5, 0);
     } else {
@@ -242,90 +235,6 @@ void GLWidget::resizeEvent(QResizeEvent *event)
     QOpenGLWidget::resizeEvent(event);
 }
 
-void GLWidget::mousePressEvent(QMouseEvent *event)
-{
-    m_mousePressed = true;
-    m_firstMouse = true;
-    setCursor(Qt::ClosedHandCursor);
-    QOpenGLWidget::mousePressEvent(event);
-}
-
-void GLWidget::mouseReleaseEvent(QMouseEvent *event)
-{
-    m_mousePressed = false;
-    setCursor(Qt::OpenHandCursor);
-    QOpenGLWidget::mouseReleaseEvent(event);
-}
-
-void GLWidget::enterEvent(QEnterEvent *event)
-{
-    Q_UNUSED(event);
-    setCursor(Qt::OpenHandCursor);
-}
-
-void GLWidget::leaveEvent(QEvent *event)
-{
-    m_firstMouse = true;
-    QOpenGLWidget::leaveEvent(event);
-}
-
-void GLWidget::wheelEvent(QWheelEvent *event)
-{
-    const float delta = event->angleDelta().y() / 120.0f;
-    m_camera->processMouseScroll(delta);
-    QOpenGLWidget::wheelEvent(event);
-}
-
-void GLWidget::mouseMoveEvent(QMouseEvent *event)
-{
-    if (!m_mousePressed)
-    {
-        return;
-    }
-
-    const float xpos = static_cast<float>(event->position().x());
-    const float ypos = static_cast<float>(event->position().y());
-
-    if (m_firstMouse)
-    {
-        m_lastX = xpos;
-        m_lastY = ypos;
-        m_firstMouse = false;
-        return;
-    }
-
-    float xoffset = xpos - m_lastX;
-    float yoffset = m_lastY - ypos;
-    m_lastX = xpos;
-    m_lastY = ypos;
-
-    // 使用 Camera 类处理鼠标移动
-    m_camera->processMouseMovement(xoffset, yoffset);
-
-    QOpenGLWidget::mouseMoveEvent(event);
-}
-
-void GLWidget::keyPressEvent(QKeyEvent *event)
-{
-    if (event->key() == Qt::Key_Escape)
-    {
-        QWidget *mainWindow = parentWidget();
-        mainWindow->close();
-        return;
-    }
-
-    m_keys.insert(event->key());
-
-    QOpenGLWidget::keyPressEvent(event);
-}
-
-void GLWidget::keyReleaseEvent(QKeyEvent *event)
-{
-    m_keys.remove(event->key());
-
-    QOpenGLWidget::keyReleaseEvent(event);
-}
-
 void GLWidget::hideEvent(QHideEvent *event)
 {
     stopRendering();
@@ -340,12 +249,8 @@ void GLWidget::showEvent(QShowEvent *event)
 
 void GLWidget::updateCamera(float dt)
 {
-    // Shift 键加速
-    const float speedMultiplier = m_keys.contains(Qt::Key_Shift) ? 3.0f : 1.0f;
-    m_camera->setMovementSpeed(2.5f * speedMultiplier);
-
-    // 使用 Camera 类处理键盘输入
-    m_camera->processKeyboard(m_keys, dt);
+    // 空实现，子类 GLCameraWidget 会重写
+    Q_UNUSED(dt);
 }
 
 void GLWidget::stopRendering()

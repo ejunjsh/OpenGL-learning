@@ -4,7 +4,7 @@
 #include "header/mesh.h"
 
 GLTextureWidget::GLTextureWidget(QWidget *parent)
-    : GLWidget(parent)
+    : GLCameraWidget(parent)
 {
     setName("GLTextureWidget");
 }

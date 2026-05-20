@@ -9,7 +9,7 @@
 #include "header/mesh.h"
 
 GLCoordinateWidget::GLCoordinateWidget(QWidget *parent)
-    : GLWidget(parent)
+    : GLCameraWidget(parent)
 {
     setName("GLCoordinateWidget");
 

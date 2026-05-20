@@ -18,7 +18,6 @@
 #include <QPushButton>
 #include <memory>
 
-#include "camera.h"
 #include "object3d.h"
 
 class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
@@ -38,37 +37,23 @@ protected:
 
     unsigned int loadTexture(const QString &path, bool flipVertically = false, bool flipHorizontally = false);
     void resizeEvent(QResizeEvent *event) override;
-    void enterEvent(QEnterEvent *event) override;
-    void mouseMoveEvent(QMouseEvent *event) override;
-    void mousePressEvent(QMouseEvent *event) override;
-    void mouseReleaseEvent(QMouseEvent *event) override;
-    void leaveEvent(QEvent *event) override;
-    void wheelEvent(QWheelEvent *event) override;
-    void keyPressEvent(QKeyEvent *event) override;
-    void keyReleaseEvent(QKeyEvent *event) override;
     void hideEvent(QHideEvent *event) override;
     void showEvent(QShowEvent *event) override;
     bool eventFilter(QObject *obj, QEvent *event) override;
 
+    virtual void updateCamera(float dt);
+
 private:
-    void updateCamera(float dt);
     void toggleMenu();
 
 protected:
     QOpenGLShaderProgram m_program;
-    std::unique_ptr<Camera> m_camera;
     std::shared_ptr<Object3D> m_rootObject;
     float m_elapsedTime = 0.0f;
 
 private:
-    bool m_firstMouse = true;
-    float m_lastX = 0.0f;
-    float m_lastY = 0.0f;
-
-    bool m_mousePressed = false;
-    QSet<int> m_keys;
-    QElapsedTimer m_timer;
     QTimer m_frameTimer;
+    QElapsedTimer m_timer;
     QLabel *m_fpsLabel;
     QLabel *m_nameLabel;
     int m_frameCount = 0;
@@ -83,6 +68,7 @@ private:
     // 右下角帮助
     QLabel *m_helpButton;
     QFrame *m_helpPanel;
+    QLabel *m_helpLabel = nullptr;
     bool m_helpVisible = false;
     void toggleHelp();
 

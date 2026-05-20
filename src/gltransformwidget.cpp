@@ -4,7 +4,7 @@
 #include "header/mesh.h"
 
 GLTransformWidget::GLTransformWidget(QWidget *parent)
-    : GLWidget(parent)
+    : GLCameraWidget(parent)
 {
     setName("GLTransformWidget");
 }

@@ -5,6 +5,7 @@ CONFIG += C++17
 SOURCES += \
     src/main.cpp \
     src/glwidget.cpp \
+    src/glcamerawidget.cpp \
     src/gltrianglewidget.cpp \
     src/gltexturewidget.cpp \
     src/gltransformwidget.cpp \
@@ -17,6 +18,7 @@ SOURCES += \
 
 HEADERS += \
     src/header/glwidget.h \
+    src/header/glcamerawidget.h \
     src/header/gltrianglewidget.h \
     src/header/gltexturewidget.h \
     src/header/gltransformwidget.h \

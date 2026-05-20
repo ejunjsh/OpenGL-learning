@@ -3,7 +3,7 @@
 #include "header/mesh.h"
 
 GLTriangleWidget::GLTriangleWidget(QWidget *parent)
-    : GLWidget(parent)
+    : GLCameraWidget(parent)
 {
     setName("GLTriangleWidget");
 }

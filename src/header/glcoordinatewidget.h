@@ -1,10 +1,10 @@
 #pragma once
 
-#include "glwidget.h"
+#include "glcamerawidget.h"
 #include <QVector3D>
 #include <QSpinBox>
 
-class GLCoordinateWidget : public GLWidget
+class GLCoordinateWidget : public GLCameraWidget
 {
     Q_OBJECT
 public:
