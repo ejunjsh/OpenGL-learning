@@ -119,6 +119,7 @@ void GLWidget::toggleHelp()
 QString GLWidget::getHelpText() const
 {
     return "Mouse drag: Rotate view\n"
+           "Scroll: Zoom\n"
            "W/A/S/D: Move\n"
            "Space: Move up\n"
            "Ctrl: Move down\n"
