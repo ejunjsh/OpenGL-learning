@@ -118,7 +118,7 @@ void GLWidget::toggleHelp()
 
 QString GLWidget::getHelpText() const
 {
-    return "Basic OpenGL Widget";
+    return "Nothing here";
 }
 
 bool GLWidget::eventFilter(QObject *obj, QEvent *event)

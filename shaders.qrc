@@ -5,5 +5,11 @@
         <file>shaders/triangle1.frag</file>
         <file>shaders/texture.vert</file>
         <file>shaders/texture.frag</file>
+        <file>shaders/texture/texture_simple.vert</file>
+        <file>shaders/texture/texture_simple.frag</file>
+        <file>shaders/texture/texture_mix.frag</file>
+        <file>shaders/texture/texture_color_mix.frag</file>
+        <file>shaders/texture/texture_exercise1.frag</file>
+        <file>shaders/texture/texture_exercise4.frag</file>
     </qresource>
 </RCC>
