@@ -8,6 +8,7 @@
 #include <QFrame>
 #include <QTimer>
 #include <QPropertyAnimation>
+#include <QScrollArea>
 
 Panel::Panel(QWidget *parent)
     : QWidget(parent)
@@ -24,9 +25,30 @@ void Panel::setupUI()
 {
     setStyleSheet("background-color: #2b2b2b;");
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    QVBoxLayout *outerLayout = new QVBoxLayout(this);
+    outerLayout->setContentsMargins(0, 0, 0, 0);
+    outerLayout->setSpacing(0);
+
+    // ---- 滚动区域 ----
+    QScrollArea *scrollArea = new QScrollArea(this);
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setFrameShape(QFrame::NoFrame);
+    scrollArea->setStyleSheet(
+        "QScrollArea { background: transparent; border: none; }"
+        "QScrollBar:vertical { background: #1e1e1e; width: 8px; margin: 0; }"
+        "QScrollBar::handle:vertical { background: #555; border-radius: 4px; min-height: 30px; }"
+        "QScrollBar::handle:vertical:hover { background: #777; }"
+        "QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }"
+        "QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical { background: none; }");
+    outerLayout->addWidget(scrollArea);
+
+    // ---- 滚动内容容器 ----
+    QWidget *scrollContent = new QWidget();
+    scrollContent->setStyleSheet("background: transparent;");
+    QVBoxLayout *layout = new QVBoxLayout(scrollContent);
     layout->setContentsMargins(12, 12, 12, 12);
     layout->setSpacing(4);
+    scrollArea->setWidget(scrollContent);
 
     // ---- 通用样式 ----
     const QString headerStyle =
@@ -97,6 +119,42 @@ void Panel::setupUI()
         new ActionButton("hello transform", this, []() { return new GLTransformWidget(); }),
         new ActionButton("hello coordinate", this, []() { return new GLCoordinateWidget(); })
     }, true);
+    addSection("Lighting", {
+        new ActionButton("hello triangle", this, []() { return new GLTriangleWidget(); }),
+        new ActionButton("hello texture",  this, []() { return new GLTextureWidget(); }),
+        new ActionButton("hello transform", this, []() { return new GLTransformWidget(); }),
+        new ActionButton("hello coordinate", this, []() { return new GLCoordinateWidget(); })
+    }, false);
+    addSection("Model Loading", {
+        new ActionButton("hello triangle", this, []() { return new GLTriangleWidget(); }),
+        new ActionButton("hello texture",  this, []() { return new GLTextureWidget(); }),
+        new ActionButton("hello transform", this, []() { return new GLTransformWidget(); }),
+        new ActionButton("hello coordinate", this, []() { return new GLCoordinateWidget(); })
+    }, false);
+    addSection("Advanced OpenGL", {
+        new ActionButton("hello triangle", this, []() { return new GLTriangleWidget(); }),
+        new ActionButton("hello texture",  this, []() { return new GLTextureWidget(); }),
+        new ActionButton("hello transform", this, []() { return new GLTransformWidget(); }),
+        new ActionButton("hello coordinate", this, []() { return new GLCoordinateWidget(); })
+    }, false);
+    addSection("Advanced Lighting", {
+        new ActionButton("hello triangle", this, []() { return new GLTriangleWidget(); }),
+        new ActionButton("hello texture",  this, []() { return new GLTextureWidget(); }),
+        new ActionButton("hello transform", this, []() { return new GLTransformWidget(); }),
+        new ActionButton("hello coordinate", this, []() { return new GLCoordinateWidget(); })
+    }, false);
+    addSection("PBR", {
+        new ActionButton("hello triangle", this, []() { return new GLTriangleWidget(); }),
+        new ActionButton("hello texture",  this, []() { return new GLTextureWidget(); }),
+        new ActionButton("hello transform", this, []() { return new GLTransformWidget(); }),
+        new ActionButton("hello coordinate", this, []() { return new GLCoordinateWidget(); })
+    }, false);
+     addSection("In Practice", {
+        new ActionButton("hello triangle", this, []() { return new GLTriangleWidget(); }),
+        new ActionButton("hello texture",  this, []() { return new GLTextureWidget(); }),
+        new ActionButton("hello transform", this, []() { return new GLTransformWidget(); }),
+        new ActionButton("hello coordinate", this, []() { return new GLCoordinateWidget(); })
+    }, false);
 
     layout->addStretch();
 

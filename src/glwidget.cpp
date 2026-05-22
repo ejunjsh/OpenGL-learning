@@ -97,7 +97,7 @@ void GLWidget::toggleMenu()
 {
     m_menuVisible = !m_menuVisible;
     if (m_menuVisible) {
-        m_menuPanel->move(width() - m_menuPanel->width() - 10, 24);
+        m_menuPanel->move(width() - m_menuPanel->width() - 5, 24);
         m_menuPanel->show();
     } else {
         m_menuPanel->hide();
@@ -109,7 +109,7 @@ void GLWidget::toggleHelp()
     m_helpVisible = !m_helpVisible;
     if (m_helpVisible) {
         m_helpLabel->setText(getHelpText());
-        m_helpPanel->move(width() - m_helpPanel->width() - 5, height() - m_helpPanel->height() - 5);
+        m_helpPanel->move(width() - m_helpPanel->width() - 5, height() - m_helpPanel->height() - 20);
         m_helpPanel->show();
     } else {
         m_helpPanel->hide();
@@ -230,7 +230,7 @@ void GLWidget::resizeEvent(QResizeEvent *event)
         m_menuPanel->move(width() - m_menuPanel->width() - 5, 24);
     }
     if (m_helpVisible) {
-        m_helpPanel->move(width() - m_helpPanel->width() - 5, height() - m_helpPanel->height() - 5);
+        m_helpPanel->move(width() - m_helpPanel->width() - 5, height() - m_helpPanel->height() - 20);
     }
     QOpenGLWidget::resizeEvent(event);
 }
