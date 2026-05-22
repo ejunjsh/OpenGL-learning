@@ -114,46 +114,46 @@ void Panel::setupUI()
 
     // ---- Getting Started ----
     addSection("Getting Started", {
-        new ActionButton("hello triangle", this, []() { return new GLTriangleWidget(); }),
-        new ActionButton("hello texture",  this, []() { return new GLTextureWidget(); }),
-        new ActionButton("hello transform", this, []() { return new GLTransformWidget(); }),
-        new ActionButton("hello coordinate", this, []() { return new GLCoordinateWidget(); })
+        new ActionButton("Triangle", this, []() { return new GLTriangleWidget(); }),
+        new ActionButton("Texture",  this, []() { return new GLTextureWidget(); }),
+        new ActionButton("Transform", this, []() { return new GLTransformWidget(); }),
+        new ActionButton("Coordinate", this, []() { return new GLCoordinateWidget(); })
     }, true);
     addSection("Lighting", {
-        new ActionButton("hello triangle", this, []() { return new GLTriangleWidget(); }),
-        new ActionButton("hello texture",  this, []() { return new GLTextureWidget(); }),
-        new ActionButton("hello transform", this, []() { return new GLTransformWidget(); }),
-        new ActionButton("hello coordinate", this, []() { return new GLCoordinateWidget(); })
+        new ActionButton("Triangle", this, []() { return new GLTriangleWidget(); }),
+        new ActionButton("Texture",  this, []() { return new GLTextureWidget(); }),
+        new ActionButton("Transform", this, []() { return new GLTransformWidget(); }),
+        new ActionButton("Coordinate", this, []() { return new GLCoordinateWidget(); })
     }, false);
     addSection("Model Loading", {
-        new ActionButton("hello triangle", this, []() { return new GLTriangleWidget(); }),
-        new ActionButton("hello texture",  this, []() { return new GLTextureWidget(); }),
-        new ActionButton("hello transform", this, []() { return new GLTransformWidget(); }),
-        new ActionButton("hello coordinate", this, []() { return new GLCoordinateWidget(); })
+        new ActionButton("Triangle", this, []() { return new GLTriangleWidget(); }),
+        new ActionButton("Texture",  this, []() { return new GLTextureWidget(); }),
+        new ActionButton("Transform", this, []() { return new GLTransformWidget(); }),
+        new ActionButton("Coordinate", this, []() { return new GLCoordinateWidget(); })
     }, false);
     addSection("Advanced OpenGL", {
-        new ActionButton("hello triangle", this, []() { return new GLTriangleWidget(); }),
-        new ActionButton("hello texture",  this, []() { return new GLTextureWidget(); }),
-        new ActionButton("hello transform", this, []() { return new GLTransformWidget(); }),
-        new ActionButton("hello coordinate", this, []() { return new GLCoordinateWidget(); })
+        new ActionButton("Triangle", this, []() { return new GLTriangleWidget(); }),
+        new ActionButton("Texture",  this, []() { return new GLTextureWidget(); }),
+        new ActionButton("Transform", this, []() { return new GLTransformWidget(); }),
+        new ActionButton("Coordinate", this, []() { return new GLCoordinateWidget(); })
     }, false);
     addSection("Advanced Lighting", {
-        new ActionButton("hello triangle", this, []() { return new GLTriangleWidget(); }),
-        new ActionButton("hello texture",  this, []() { return new GLTextureWidget(); }),
-        new ActionButton("hello transform", this, []() { return new GLTransformWidget(); }),
-        new ActionButton("hello coordinate", this, []() { return new GLCoordinateWidget(); })
+        new ActionButton("Triangle", this, []() { return new GLTriangleWidget(); }),
+        new ActionButton("Texture",  this, []() { return new GLTextureWidget(); }),
+        new ActionButton("Transform", this, []() { return new GLTransformWidget(); }),
+        new ActionButton("Coordinate", this, []() { return new GLCoordinateWidget(); })
     }, false);
     addSection("PBR", {
-        new ActionButton("hello triangle", this, []() { return new GLTriangleWidget(); }),
-        new ActionButton("hello texture",  this, []() { return new GLTextureWidget(); }),
-        new ActionButton("hello transform", this, []() { return new GLTransformWidget(); }),
-        new ActionButton("hello coordinate", this, []() { return new GLCoordinateWidget(); })
+        new ActionButton("Triangle", this, []() { return new GLTriangleWidget(); }),
+        new ActionButton("Texture",  this, []() { return new GLTextureWidget(); }),
+        new ActionButton("Transform", this, []() { return new GLTransformWidget(); }),
+        new ActionButton("Coordinate", this, []() { return new GLCoordinateWidget(); })
     }, false);
      addSection("In Practice", {
-        new ActionButton("hello triangle", this, []() { return new GLTriangleWidget(); }),
-        new ActionButton("hello texture",  this, []() { return new GLTextureWidget(); }),
-        new ActionButton("hello transform", this, []() { return new GLTransformWidget(); }),
-        new ActionButton("hello coordinate", this, []() { return new GLCoordinateWidget(); })
+        new ActionButton("Triangle", this, []() { return new GLTriangleWidget(); }),
+        new ActionButton("Texture",  this, []() { return new GLTextureWidget(); }),
+        new ActionButton("Transform", this, []() { return new GLTransformWidget(); }),
+        new ActionButton("Coordinate", this, []() { return new GLCoordinateWidget(); })
     }, false);
 
     layout->addStretch();
