@@ -5,7 +5,9 @@
 #include "header/gltransformwidget.h"
 #include "header/glcoordinatewidget.h"
 #include <QVBoxLayout>
+#include <QFrame>
 #include <QTimer>
+#include <QPropertyAnimation>
 
 Panel::Panel(QWidget *parent)
     : QWidget(parent)
@@ -23,18 +25,84 @@ void Panel::setupUI()
     setStyleSheet("background-color: #2b2b2b;");
 
     QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(20, 20, 20, 20);
+    layout->setContentsMargins(12, 12, 12, 12);
+    layout->setSpacing(4);
 
-    ActionButton *triangleBtn = new ActionButton("hello triangle", this, new GLTriangleWidget());
-    ActionButton *textureBtn = new ActionButton("hello texture", this, new GLTextureWidget());
-    ActionButton *transformBtn = new ActionButton("hello transform", this, new GLTransformWidget());
-    ActionButton *coordinateBtn = new ActionButton("hello coordinate", this, new GLCoordinateWidget());
+    // ---- 通用样式 ----
+    const QString headerStyle =
+        "QPushButton { text-align: left; padding: 8px 12px; color: #ccc; "
+        "background: rgba(255,255,255,8); border: none; border-radius: 4px; font-size: 13px; font-weight: bold; }"
+        "QPushButton:hover { background: rgba(255,255,255,18); }";
 
-    layout->addWidget(triangleBtn);
-    layout->addWidget(textureBtn);
-    layout->addWidget(transformBtn);
-    layout->addWidget(coordinateBtn);
+    // ---- 创建手风琴分组的辅助 lambda ----
+    auto addSection = [&](const QString &title, std::initializer_list<ActionButton*> buttons, bool expanded = false) {
+        QPushButton *header = new QPushButton((expanded ? "▼ " : "▶ ") + title, this);
+        header->setStyleSheet(headerStyle);
+        header->setCursor(Qt::PointingHandCursor);
+        header->setFixedHeight(34);
+        layout->addWidget(header);
+
+        QFrame *content = new QFrame(this);
+        content->setStyleSheet("background: transparent; border: none;");
+        QVBoxLayout *contentLayout = new QVBoxLayout(content);
+        contentLayout->setContentsMargins(8, 4, 8, 4);
+        contentLayout->setSpacing(4);
+        for (auto *btn : buttons) {
+            contentLayout->addWidget(btn);
+            connect(btn, &ActionButton::reloadRequested, this, &Panel::triggerSignal);
+        }
+        content->setVisible(expanded);
+        layout->addWidget(content);
+
+        connect(header, &QPushButton::clicked, this, [header, content, title]() {
+            bool expanding = !content->isVisible();
+            header->setText((expanding ? "▼ " : "▶ ") + title);
+
+            // 停止正在运行的动画
+            auto *oldAnim = content->findChild<QPropertyAnimation*>(QString(), Qt::FindDirectChildrenOnly);
+            if (oldAnim) oldAnim->stop();
+
+            if (expanding) {
+                content->setVisible(true);
+                int targetHeight = content->sizeHint().height();
+                content->setMaximumHeight(0);
+
+                auto *anim = new QPropertyAnimation(content, "maximumHeight", content);
+                anim->setDuration(250);
+                anim->setEasingCurve(QEasingCurve::OutCubic);
+                anim->setStartValue(0);
+                anim->setEndValue(targetHeight);
+                anim->start(QAbstractAnimation::DeleteWhenStopped);
+            } else {
+                int startHeight = content->height();
+                content->setMaximumHeight(startHeight);
+
+                auto *anim = new QPropertyAnimation(content, "maximumHeight", content);
+                anim->setDuration(250);
+                anim->setEasingCurve(QEasingCurve::OutCubic);
+                anim->setStartValue(startHeight);
+                anim->setEndValue(0);
+                connect(anim, &QPropertyAnimation::finished, content, [content]() {
+                    content->setVisible(false);
+                });
+                anim->start(QAbstractAnimation::DeleteWhenStopped);
+            }
+        });
+    };
+
+    // ---- Getting Started ----
+    addSection("Getting Started", {
+        new ActionButton("hello triangle", this, []() { return new GLTriangleWidget(); }),
+        new ActionButton("hello texture",  this, []() { return new GLTextureWidget(); }),
+        new ActionButton("hello transform", this, []() { return new GLTransformWidget(); }),
+        new ActionButton("hello coordinate", this, []() { return new GLCoordinateWidget(); })
+    }, true);
+
     layout->addStretch();
 
-    QTimer::singleShot(0, triangleBtn, &QPushButton::click);
+    // 默认加载第一个
+    QTimer::singleShot(0, this, [this]() {
+        auto *btn = findChild<ActionButton*>();
+        if (btn) btn->click();
+    });
 }

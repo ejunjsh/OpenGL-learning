@@ -1,9 +1,8 @@
 #include "header/actionbutton.h"
-#include "header/panel.h"
 
-ActionButton::ActionButton(const QString &text, QWidget *parent, GLWidget *glWidget)
+ActionButton::ActionButton(const QString &text, QWidget *parent, Factory factory)
     : QPushButton(text, parent)
-    , m_glWidget(glWidget)
+    , m_factory(std::move(factory))
 {
     setFixedHeight(30);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -16,18 +15,17 @@ ActionButton::ActionButton(const QString &text, QWidget *parent, GLWidget *glWid
         "  font-size: 14px;"
     "}"
     "QPushButton:hover {"
-    "  background-color: #5a9fff;"
+        "  background-color: #5a9fff;"
     "}"
     );
 
-    if (m_glWidget) {
-        m_glWidget->setName(this->text());
-    }
-
     connect(this, &QPushButton::clicked, [this]() {
-        Panel *panel = qobject_cast<Panel*>(this->parent());
-        if (panel) {
-            panel->triggerSignal(m_glWidget);
+        if (!m_glWidget && m_factory) {
+            m_glWidget = m_factory();
+            if (m_glWidget) {
+                m_glWidget->setName(this->text());
+            }
         }
+        emit reloadRequested(m_glWidget);
     });
 }
