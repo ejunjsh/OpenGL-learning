@@ -11,5 +11,7 @@
         <file>shaders/texture/texture_color_mix.frag</file>
         <file>shaders/texture/texture_exercise1.frag</file>
         <file>shaders/texture/texture_exercise4.frag</file>
+        <file>shaders/transform/transform.vert</file>
+        <file>shaders/transform/transform.frag</file>
     </qresource>
 </RCC>

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "glcamerawidget.h"
+#include "glwidget.h"
 
-class GLTransformWidget : public GLCameraWidget
+class GLTransformWidget : public GLWidget
 {
     Q_OBJECT
 public:
@@ -13,5 +13,15 @@ protected:
     void paintGL() override;
 
 private:
-    void setupScene();
+    void drawTransform();
+    void drawExercise1();
+    void drawExercise2();
+
+private:
+    GLuint m_vao = 0;
+    GLuint m_vbo = 0;
+    GLuint m_ebo = 0;
+    GLuint m_texture1 = 0;
+    GLuint m_texture2 = 0;
+    int m_sceneIndex = 0;  // 0=Transform, 1=Exercise1, 2=Exercise2
 };

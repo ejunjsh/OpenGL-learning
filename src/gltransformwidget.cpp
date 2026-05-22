@@ -1,87 +1,179 @@
 #include "header/gltransformwidget.h"
 #include <QMatrix4x4>
-#include <QOpenGLFunctions>
-#include "header/mesh.h"
+#include <QRadioButton>
+#include <QVBoxLayout>
+#include <QtMath>
 
 GLTransformWidget::GLTransformWidget(QWidget *parent)
-    : GLCameraWidget(parent)
+    : GLWidget(parent)
+    , m_sceneIndex(0)
 {
     setName("GLTransformWidget");
+
+    QFrame *menu = getMenuPanel();
+    QVBoxLayout *menuLayout = new QVBoxLayout(menu);
+
+    QRadioButton *transformBtn = new QRadioButton("Transform", menu);
+    QRadioButton *exercise1Btn = new QRadioButton("Exercise1", menu);
+    QRadioButton *exercise2Btn = new QRadioButton("Exercise2", menu);
+    transformBtn->setChecked(true);
+    transformBtn->setStyleSheet("color: white;");
+    exercise1Btn->setStyleSheet("color: white;");
+    exercise2Btn->setStyleSheet("color: white;");
+
+    menuLayout->addWidget(transformBtn);
+    menuLayout->addWidget(exercise1Btn);
+    menuLayout->addWidget(exercise2Btn);
+    menuLayout->addStretch();
+
+    connect(transformBtn, &QRadioButton::toggled, this, [this](bool checked) {
+        if (checked) m_sceneIndex = 0;
+    });
+    connect(exercise1Btn, &QRadioButton::toggled, this, [this](bool checked) {
+        if (checked) m_sceneIndex = 1;
+    });
+    connect(exercise2Btn, &QRadioButton::toggled, this, [this](bool checked) {
+        if (checked) m_sceneIndex = 2;
+    });
 }
 
 void GLTransformWidget::initializeGL()
 {
     GLWidget::initializeGL();
 
-    if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/texture.vert") ||
-        !m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/texture.frag"))
+    // 编译着色器
+    if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/transform/transform.vert") ||
+        !m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/transform/transform.frag"))
     {
-        qFatal("Failed to compile texture shader");
+        qFatal("Failed to compile transform shader");
     }
-
     if (!m_program.link())
     {
-        qFatal("Failed to link texture shader program");
+        qFatal("Failed to link transform shader program");
     }
 
-    setupScene();
-}
-
-void GLTransformWidget::paintGL()
-{
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
-
-    const float aspect = static_cast<float>(width()) / height();
-    const QMatrix4x4 projection = m_camera->getProjectionMatrix(aspect);
-    const QMatrix4x4 view = m_camera->getViewMatrix();
-
-    m_program.bind();
-    m_program.setUniformValue("view", view);
-    m_program.setUniformValue("projection", projection);
-
-    if (m_rootObject)
-    {
-        m_rootObject->setPosition(QVector3D(0.5f, -0.5f, 0.0f));
-        // 更新旋转角度（使用父类的 elapsedTime）
-        m_rootObject->setRotation(QVector3D(0.0f, 0.0f, elapsedTime() * 45.0f));
-        m_rootObject->draw(m_program);
-    }
-
-    m_program.release();
-}
-
-void GLTransformWidget::setupScene()
-{
-    std::vector<Vertex> vertices = {
-        Vertex(QVector3D(0.5f, 0.5f, 0.0f), QVector2D(1.0f, 1.0f)),
-        Vertex(QVector3D(0.5f, -0.5f, 0.0f), QVector2D(1.0f, 0.0f)),
-        Vertex(QVector3D(-0.5f, -0.5f, 0.0f), QVector2D(0.0f, 0.0f)),
-        Vertex(QVector3D(-0.5f, 0.5f, 0.0f), QVector2D(0.0f, 1.0f))
+    // 顶点数据：位置 + 纹理坐标
+    float vertices[] = {
+        // positions          // texture coords
+         0.5f,  0.5f, 0.0f,   1.0f, 1.0f, // top right
+         0.5f, -0.5f, 0.0f,   1.0f, 0.0f, // bottom right
+        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, // bottom left
+        -0.5f,  0.5f, 0.0f,   0.0f, 1.0f  // top left
     };
-
-    std::vector<unsigned int> indices = {
+    unsigned int indices[] = {
         0, 1, 3,
         1, 2, 3
     };
 
+    glGenVertexArrays(1, &m_vao);
+    glGenBuffers(1, &m_vbo);
+    glGenBuffers(1, &m_ebo);
+
+    glBindVertexArray(m_vao);
+
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    // position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    // texture coord attribute
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glBindVertexArray(0);
+
     // 加载纹理
-    Texture containerTex;
-    containerTex.id = loadTexture(":/textures/container.jpg");
-    containerTex.name = "container";
+    m_texture1 = loadTexture(":/textures/container.jpg");
+    m_texture2 = loadTexture(":/textures/awesomeface.png", true);
 
-    Texture faceTex;
-    faceTex.id = loadTexture(":/textures/awesomeface.png", true);
-    faceTex.name = "face";
+    // 设置每个采样器对应的纹理单元
+    m_program.bind();
+    m_program.setUniformValue("texture1", 0);
+    m_program.setUniformValue("texture2", 1);
+    m_program.release();
+}
 
-    std::vector<Texture> textures = {containerTex, faceTex};
+void GLTransformWidget::paintGL()
+{
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
 
-    auto mesh = std::make_shared<Mesh>(vertices, indices, textures);
+    if (m_sceneIndex == 0)
+        drawTransform();
+    else if (m_sceneIndex == 1)
+        drawExercise1();
+    else
+        drawExercise2();
+}
 
-    auto quad = std::make_shared<Object3D>("Quad");
-    quad->addMesh(mesh);
+void GLTransformWidget::drawTransform()
+{
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_texture1);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, m_texture2);
 
-    m_rootObject = std::make_shared<Object3D>("Root");
-    m_rootObject->addChild(quad);
+    // 先平移，再旋转（绕自身中心旋转）
+    QMatrix4x4 transform;
+    transform.translate(0.5f, -0.5f, 0.0f);
+    transform.rotate(elapsedTime() * 57.29578f, 0.0f, 0.0f, 1.0f);
+
+    m_program.bind();
+    m_program.setUniformValue("transform", transform);
+
+    glBindVertexArray(m_vao);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    m_program.release();
+}
+
+void GLTransformWidget::drawExercise1()
+{
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_texture1);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, m_texture2);
+
+    // 先旋转，再平移（绕原点公转）
+    QMatrix4x4 transform;
+    transform.rotate(elapsedTime() * 57.29578f, 0.0f, 0.0f, 1.0f);
+    transform.translate(0.5f, -0.5f, 0.0f);
+
+    m_program.bind();
+    m_program.setUniformValue("transform", transform);
+
+    glBindVertexArray(m_vao);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    m_program.release();
+}
+
+void GLTransformWidget::drawExercise2()
+{
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_texture1);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, m_texture2);
+
+    m_program.bind();
+
+    // 第一个容器：平移 + 旋转
+    QMatrix4x4 transform;
+    transform.translate(0.5f, -0.5f, 0.0f);
+    transform.rotate(elapsedTime() * 57.29578f, 0.0f, 0.0f, 1.0f);
+    m_program.setUniformValue("transform", transform);
+    glBindVertexArray(m_vao);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+    // 第二个容器：平移 + 缩放（随时间脉冲）
+    transform.setToIdentity();
+    transform.translate(-0.5f, 0.5f, 0.0f);
+    float scaleAmount = static_cast<float>(qSin(elapsedTime()));
+    transform.scale(scaleAmount, scaleAmount, scaleAmount);
+    m_program.setUniformValue("transform", transform);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+    m_program.release();
 }
