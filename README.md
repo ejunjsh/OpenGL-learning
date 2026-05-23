@@ -2,6 +2,8 @@
 
 learn opengl and write c/c++ code in qt for pratice
 
+![Screenshot](Screenshot.png)
+
 ## precondition
 
 ````
