@@ -1,9 +1,9 @@
 #include "header/panel.h"
 #include "header/actionbutton.h"
-#include "header/gltrianglewidget.h"
-#include "header/gltexturewidget.h"
-#include "header/gltransformwidget.h"
-#include "header/glcoordinatewidget.h"
+#include "header/gltriangle.h"
+#include "header/gltexture.h"
+#include "header/gltransform.h"
+#include "header/glcamera.h"
 #include <QVBoxLayout>
 #include <QFrame>
 #include <QTimer>
@@ -16,7 +16,7 @@ Panel::Panel(QWidget *parent)
     setupUI();
 }
 
-void Panel::triggerSignal(GLWidget *widget)
+void Panel::triggerSignal(GLBase *widget)
 {
     emit reloadRequested(widget);
 }
@@ -114,46 +114,46 @@ void Panel::setupUI()
 
     // ---- Getting Started ----
     addSection("Getting Started", {
-        new ActionButton("Triangle", this, []() { return new GLTriangleWidget(); }),
-        new ActionButton("Texture",  this, []() { return new GLTextureWidget(); }),
-        new ActionButton("Transform", this, []() { return new GLTransformWidget(); }),
-        new ActionButton("Coordinate", this, []() { return new GLCoordinateWidget(); })
+        new ActionButton("Triangle", this, []() { return new GLTriangle(); }),
+        new ActionButton("Texture",  this, []() { return new GLTexture(); }),
+        new ActionButton("Transform", this, []() { return new GLTransform(); }),
+        new ActionButton("Camera", this, []() { return new GLCamera(); })
     }, true);
     addSection("Lighting", {
-        new ActionButton("Triangle", this, []() { return new GLTriangleWidget(); }),
-        new ActionButton("Texture",  this, []() { return new GLTextureWidget(); }),
-        new ActionButton("Transform", this, []() { return new GLTransformWidget(); }),
-        new ActionButton("Coordinate", this, []() { return new GLCoordinateWidget(); })
+        new ActionButton("Triangle", this, []() { return new GLTriangle(); }),
+        new ActionButton("Texture",  this, []() { return new GLTexture(); }),
+        new ActionButton("Transform", this, []() { return new GLTransform(); }),
+        new ActionButton("Camera", this, []() { return new GLCamera(); })
     }, false);
     addSection("Model Loading", {
-        new ActionButton("Triangle", this, []() { return new GLTriangleWidget(); }),
-        new ActionButton("Texture",  this, []() { return new GLTextureWidget(); }),
-        new ActionButton("Transform", this, []() { return new GLTransformWidget(); }),
-        new ActionButton("Coordinate", this, []() { return new GLCoordinateWidget(); })
+        new ActionButton("Triangle", this, []() { return new GLTriangle(); }),
+        new ActionButton("Texture",  this, []() { return new GLTexture(); }),
+        new ActionButton("Transform", this, []() { return new GLTransform(); }),
+        new ActionButton("Camera", this, []() { return new GLCamera(); })
     }, false);
     addSection("Advanced OpenGL", {
-        new ActionButton("Triangle", this, []() { return new GLTriangleWidget(); }),
-        new ActionButton("Texture",  this, []() { return new GLTextureWidget(); }),
-        new ActionButton("Transform", this, []() { return new GLTransformWidget(); }),
-        new ActionButton("Coordinate", this, []() { return new GLCoordinateWidget(); })
+        new ActionButton("Triangle", this, []() { return new GLTriangle(); }),
+        new ActionButton("Texture",  this, []() { return new GLTexture(); }),
+        new ActionButton("Transform", this, []() { return new GLTransform(); }),
+        new ActionButton("Camera", this, []() { return new GLCamera(); })
     }, false);
     addSection("Advanced Lighting", {
-        new ActionButton("Triangle", this, []() { return new GLTriangleWidget(); }),
-        new ActionButton("Texture",  this, []() { return new GLTextureWidget(); }),
-        new ActionButton("Transform", this, []() { return new GLTransformWidget(); }),
-        new ActionButton("Coordinate", this, []() { return new GLCoordinateWidget(); })
+        new ActionButton("Triangle", this, []() { return new GLTriangle(); }),
+        new ActionButton("Texture",  this, []() { return new GLTexture(); }),
+        new ActionButton("Transform", this, []() { return new GLTransform(); }),
+        new ActionButton("Camera", this, []() { return new GLCamera(); })
     }, false);
     addSection("PBR", {
-        new ActionButton("Triangle", this, []() { return new GLTriangleWidget(); }),
-        new ActionButton("Texture",  this, []() { return new GLTextureWidget(); }),
-        new ActionButton("Transform", this, []() { return new GLTransformWidget(); }),
-        new ActionButton("Coordinate", this, []() { return new GLCoordinateWidget(); })
+        new ActionButton("Triangle", this, []() { return new GLTriangle(); }),
+        new ActionButton("Texture",  this, []() { return new GLTexture(); }),
+        new ActionButton("Transform", this, []() { return new GLTransform(); }),
+        new ActionButton("Camera", this, []() { return new GLCamera(); })
     }, false);
      addSection("In Practice", {
-        new ActionButton("Triangle", this, []() { return new GLTriangleWidget(); }),
-        new ActionButton("Texture",  this, []() { return new GLTextureWidget(); }),
-        new ActionButton("Transform", this, []() { return new GLTransformWidget(); }),
-        new ActionButton("Coordinate", this, []() { return new GLCoordinateWidget(); })
+        new ActionButton("Triangle", this, []() { return new GLTriangle(); }),
+        new ActionButton("Texture",  this, []() { return new GLTexture(); }),
+        new ActionButton("Transform", this, []() { return new GLTransform(); }),
+        new ActionButton("Camera", this, []() { return new GLCamera(); })
     }, false);
 
     layout->addStretch();

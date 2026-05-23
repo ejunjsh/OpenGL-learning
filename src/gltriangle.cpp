@@ -1,12 +1,12 @@
-#include "header/gltrianglewidget.h"
+#include "header/gltriangle.h"
 #include <QRadioButton>
 #include <QVBoxLayout>
 
-GLTriangleWidget::GLTriangleWidget(QWidget *parent)
-    : GLWidget(parent)
+GLTriangle::GLTriangle(QWidget *parent)
+    : GLBase(parent)
     , m_sceneIndex(0)
 {
-    setName("GLTriangleWidget");
+    setName("GLTriangle");
 
     QFrame *menu = getMenuPanel();
     QVBoxLayout *menuLayout = new QVBoxLayout(menu);
@@ -57,9 +57,9 @@ GLTriangleWidget::GLTriangleWidget(QWidget *parent)
     });
 }
 
-void GLTriangleWidget::initializeGL()
+void GLTriangle::initializeGL()
 {
-    GLWidget::initializeGL();
+    GLBase::initializeGL();
 
     if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/triangle.vert") ||
         !m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/triangle.frag"))
@@ -90,7 +90,7 @@ void GLTriangleWidget::initializeGL()
     setupExercise3();
 }
 
-void GLTriangleWidget::setupTriangle()
+void GLTriangle::setupTriangle()
 {
     float vertices[] = {
         -0.5f, -0.5f, 0.0f,
@@ -111,7 +111,7 @@ void GLTriangleWidget::setupTriangle()
     glBindVertexArray(0);
 }
 
-void GLTriangleWidget::setupIndexed()
+void GLTriangle::setupIndexed()
 {
     float vertices[] = {
          0.5f,  0.5f, 0.0f,
@@ -140,7 +140,7 @@ void GLTriangleWidget::setupIndexed()
     glBindVertexArray(0);
 }
 
-void GLTriangleWidget::setupExercise1()
+void GLTriangle::setupExercise1()
 {
     float vertices[] = {
         // first triangle
@@ -166,7 +166,7 @@ void GLTriangleWidget::setupExercise1()
     glBindVertexArray(0);
 }
 
-void GLTriangleWidget::drawTriangle()
+void GLTriangle::drawTriangle()
 {
     m_program.bind();
     glBindVertexArray(VAO_TRI);
@@ -175,7 +175,7 @@ void GLTriangleWidget::drawTriangle()
     m_program.release();
 }
 
-void GLTriangleWidget::drawIndexed()
+void GLTriangle::drawIndexed()
 {
     m_program.bind();
     glBindVertexArray(VAO_INDEXED);
@@ -184,7 +184,7 @@ void GLTriangleWidget::drawIndexed()
     m_program.release();
 }
 
-void GLTriangleWidget::drawExercise1()
+void GLTriangle::drawExercise1()
 {
     m_program.bind();
     glBindVertexArray(VAO_EX1);
@@ -193,7 +193,7 @@ void GLTriangleWidget::drawExercise1()
     m_program.release();
 }
 
-void GLTriangleWidget::setupExercise2()
+void GLTriangle::setupExercise2()
 {
     float firstTriangle[] = {
         -0.9f, -0.5f, 0.0f,
@@ -224,7 +224,7 @@ void GLTriangleWidget::setupExercise2()
     glBindVertexArray(0);
 }
 
-void GLTriangleWidget::drawExercise2()
+void GLTriangle::drawExercise2()
 {
     m_program.bind();
     glBindVertexArray(VAO_EX2[0]);
@@ -235,7 +235,7 @@ void GLTriangleWidget::drawExercise2()
     m_program.release();
 }
 
-void GLTriangleWidget::setupExercise3()
+void GLTriangle::setupExercise3()
 {
     float firstTriangle[] = {
         -0.9f, -0.5f, 0.0f,
@@ -266,7 +266,7 @@ void GLTriangleWidget::setupExercise3()
     glBindVertexArray(0);
 }
 
-void GLTriangleWidget::drawExercise3()
+void GLTriangle::drawExercise3()
 {
     m_program.bind();
     glBindVertexArray(VAO_EX3[0]);
@@ -281,7 +281,7 @@ void GLTriangleWidget::drawExercise3()
     m_program1.release();
 }
 
-void GLTriangleWidget::paintGL()
+void GLTriangle::paintGL()
 {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -299,7 +299,7 @@ void GLTriangleWidget::paintGL()
     }
 }
 
-void GLTriangleWidget::setSceneIndex(int index)
+void GLTriangle::setSceneIndex(int index)
 {
     m_sceneIndex = index;
 }

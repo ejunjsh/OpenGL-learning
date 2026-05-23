@@ -1,4 +1,4 @@
-#include "header/glcoordinatewidget.h"
+#include "header/glcoordinate.h"
 #include <QMatrix4x4>
 #include <QOpenGLFunctions>
 #include <QRandomGenerator>
@@ -8,10 +8,10 @@
 #include <climits>
 #include "header/mesh.h"
 
-GLCoordinateWidget::GLCoordinateWidget(QWidget *parent)
-    : GLCameraWidget(parent)
+GLCoordinate::GLCoordinate(QWidget *parent)
+    : GLCameraBase(parent)
 {
-    setName("GLCoordinateWidget");
+    setName("GLCoordinate");
 
     // 添加立方体数量输入框到菜单面板
     QVBoxLayout *layout = new QVBoxLayout(getMenuPanel());
@@ -41,9 +41,9 @@ GLCoordinateWidget::GLCoordinateWidget(QWidget *parent)
     });
 }
 
-void GLCoordinateWidget::initializeGL()
+void GLCoordinate::initializeGL()
 {
-    GLWidget::initializeGL();
+    GLBase::initializeGL();
 
     if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/texture.vert") ||
         !m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/texture.frag"))
@@ -59,7 +59,7 @@ void GLCoordinateWidget::initializeGL()
     setupScene(m_cubeCountSpinBox->value());
 }
 
-void GLCoordinateWidget::paintGL()
+void GLCoordinate::paintGL()
 {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -93,7 +93,7 @@ void GLCoordinateWidget::paintGL()
     m_program.release();
 }
 
-void GLCoordinateWidget::setupScene(int cubeCount)
+void GLCoordinate::setupScene(int cubeCount)
 {
     // 立方体顶点数据（位置 + 纹理坐标）
     std::vector<Vertex> meshVertices = {

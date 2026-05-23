@@ -1,13 +1,10 @@
-#include "header/glwidget.h"
+#include "header/glbase.h"
 #include <QMatrix4x4>
 #include <QImage>
 #include <QtMath>
-#include <QDebug>
 #include <QVBoxLayout>
-#include <algorithm>
-#include <cmath>
 
-GLWidget::GLWidget(QWidget *parent)
+GLBase::GLBase(QWidget *parent)
     : QOpenGLWidget(parent)
     , m_menuVisible(false)
 {
@@ -80,20 +77,20 @@ GLWidget::GLWidget(QWidget *parent)
     setFixedSize(960, 640);
 }
 
-GLWidget::~GLWidget()
+GLBase::~GLBase()
 {
     makeCurrent();
     m_rootObject.reset();
     doneCurrent();
 }
 
-void GLWidget::setName(const QString &name)
+void GLBase::setName(const QString &name)
 {
     m_nameLabel->setText(name);
     m_nameLabel->adjustSize();
 }
 
-void GLWidget::toggleMenu()
+void GLBase::toggleMenu()
 {
     m_menuVisible = !m_menuVisible;
     if (m_menuVisible) {
@@ -104,7 +101,7 @@ void GLWidget::toggleMenu()
     }
 }
 
-void GLWidget::toggleHelp()
+void GLBase::toggleHelp()
 {
     m_helpVisible = !m_helpVisible;
     if (m_helpVisible) {
@@ -116,12 +113,12 @@ void GLWidget::toggleHelp()
     }
 }
 
-QString GLWidget::getHelpText() const
+QString GLBase::getHelpText() const
 {
     return "Nothing here";
 }
 
-bool GLWidget::eventFilter(QObject *obj, QEvent *event)
+bool GLBase::eventFilter(QObject *obj, QEvent *event)
 {
     if (event->type() == QEvent::MouseButtonPress) {
         if (obj == m_menuButton) {
@@ -167,17 +164,17 @@ bool GLWidget::eventFilter(QObject *obj, QEvent *event)
     return QObject::eventFilter(obj, event);
 }
 
-void GLWidget::initializeGL()
+void GLBase::initializeGL()
 {
     initializeOpenGLFunctions();
 }
 
-void GLWidget::resizeGL(int w, int h)
+void GLBase::resizeGL(int w, int h)
 {
     glViewport(0, 0, w, h);
 }
 
-unsigned int GLWidget::loadTexture(const QString &path, bool flipVertically, bool flipHorizontally)
+unsigned int GLBase::loadTexture(const QString &path, bool flipVertically, bool flipHorizontally)
 {
     QImage image(path);
     if (image.isNull()) {
@@ -187,10 +184,10 @@ unsigned int GLWidget::loadTexture(const QString &path, bool flipVertically, boo
     image = image.convertToFormat(QImage::Format_RGBA8888);
 
     if (flipVertically) {
-        image = image.mirrored(false, true);
+        image = image.flipped(Qt::Vertical);
     }
     if (flipHorizontally) {
-        image = image.mirrored(true, false);
+        image = image.flipped(Qt::Horizontal);
     }
 
     unsigned int textureID;
@@ -210,7 +207,7 @@ unsigned int GLWidget::loadTexture(const QString &path, bool flipVertically, boo
     return textureID;
 }
 
-void GLWidget::resizeEvent(QResizeEvent *event)
+void GLBase::resizeEvent(QResizeEvent *event)
 {
     m_hasMenuContent = m_menuPanel->layout() && m_menuPanel->layout()->count() > 0;
     if (m_hasMenuContent) {
@@ -235,32 +232,32 @@ void GLWidget::resizeEvent(QResizeEvent *event)
     QOpenGLWidget::resizeEvent(event);
 }
 
-void GLWidget::hideEvent(QHideEvent *event)
+void GLBase::hideEvent(QHideEvent *event)
 {
     stopRendering();
     QOpenGLWidget::hideEvent(event);
 }
 
-void GLWidget::showEvent(QShowEvent *event)
+void GLBase::showEvent(QShowEvent *event)
 {
     startRendering();
     QOpenGLWidget::showEvent(event);
 }
 
-void GLWidget::updateCamera(float dt)
+void GLBase::updateCamera(float dt)
 {
-    // 空实现，子类 GLCameraWidget 会重写
+    // 空实现，子类 GLCameraBase 会重写
     Q_UNUSED(dt);
 }
 
-void GLWidget::stopRendering()
+void GLBase::stopRendering()
 {
     m_timer.invalidate();
     m_fpsTimer.invalidate();
     m_frameTimer.stop();
 }
 
-void GLWidget::startRendering()
+void GLBase::startRendering()
 {
     if (!m_frameTimer.isActive()) {
         m_timer.restart();

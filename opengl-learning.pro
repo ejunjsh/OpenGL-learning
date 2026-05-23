@@ -4,12 +4,12 @@ QT += widgets opengl openglwidgets
 CONFIG += C++17
 SOURCES += \
     src/main.cpp \
-    src/glwidget.cpp \
-    src/glcamerawidget.cpp \
-    src/gltrianglewidget.cpp \
-    src/gltexturewidget.cpp \
-    src/gltransformwidget.cpp \
-    src/glcoordinatewidget.cpp \
+    src/glbase.cpp \
+    src/glcamerabase.cpp \
+    src/gltriangle.cpp \
+    src/gltexture.cpp \
+    src/gltransform.cpp \
+    src/glcamera.cpp \
     src/panel.cpp \
     src/actionbutton.cpp \
     src/camera.cpp \
@@ -17,12 +17,12 @@ SOURCES += \
     src/object3d.cpp \
 
 HEADERS += \
-    src/header/glwidget.h \
-    src/header/glcamerawidget.h \
-    src/header/gltrianglewidget.h \
-    src/header/gltexturewidget.h \
-    src/header/gltransformwidget.h \
-    src/header/glcoordinatewidget.h \
+    src/header/glbase.h \
+    src/header/glcamerabase.h \
+    src/header/gltriangle.h \
+    src/header/gltexture.h \
+    src/header/gltransform.h \
+    src/header/glcamera.h \
     src/header/panel.h \
     src/header/actionbutton.h \
     src/header/camera.h \

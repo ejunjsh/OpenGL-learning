@@ -1,12 +1,12 @@
 #pragma once
 
-#include "glwidget.h"
+#include "glbase.h"
 
-class GLTransformWidget : public GLWidget
+class GLTransform : public GLBase
 {
     Q_OBJECT
 public:
-    explicit GLTransformWidget(QWidget *parent = nullptr);
+    explicit GLTransform(QWidget *parent = nullptr);
 
 protected:
     void initializeGL() override;

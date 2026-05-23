@@ -1,14 +1,14 @@
 #pragma once
 
-#include "glcamerawidget.h"
+#include "glcamerabase.h"
 #include <QVector3D>
 #include <QSpinBox>
 
-class GLCoordinateWidget : public GLCameraWidget
+class GLCamera : public GLCameraBase
 {
     Q_OBJECT
 public:
-    explicit GLCoordinateWidget(QWidget *parent = nullptr);
+    explicit GLCamera(QWidget *parent = nullptr);
 
 protected:
     void initializeGL() override;

@@ -1,15 +1,15 @@
-#include "header/gltexturewidget.h"
+#include "header/gltexture.h"
 #include <QRadioButton>
 #include <QSlider>
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QImage>
 
-GLTextureWidget::GLTextureWidget(QWidget *parent)
-    : GLWidget(parent)
+GLTexture::GLTexture(QWidget *parent)
+    : GLBase(parent)
     , m_sceneIndex(0)
 {
-    setName("GLTextureWidget");
+    setName("GLTexture");
 
     QFrame *menu = getMenuPanel();
     QVBoxLayout *menuLayout = new QVBoxLayout(menu);
@@ -95,9 +95,9 @@ GLTextureWidget::GLTextureWidget(QWidget *parent)
     });
 }
 
-void GLTextureWidget::initializeGL()
+void GLTexture::initializeGL()
 {
-    GLWidget::initializeGL();
+    GLBase::initializeGL();
 
     if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/texture/texture_simple.vert") ||
         !m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/texture/texture_simple.frag"))
@@ -312,7 +312,7 @@ void GLTextureWidget::initializeGL()
     }
 }
 
-void GLTextureWidget::paintGL()
+void GLTexture::paintGL()
 {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -334,7 +334,7 @@ void GLTextureWidget::paintGL()
     }
 }
 
-void GLTextureWidget::drawSingle()
+void GLTexture::drawSingle()
 {
     m_program.bind();
 
@@ -346,7 +346,7 @@ void GLTextureWidget::drawSingle()
     m_program.release();
 }
 
-void GLTextureWidget::drawColorMix()
+void GLTexture::drawColorMix()
 {
     m_programColorMix.bind();
 
@@ -358,7 +358,7 @@ void GLTextureWidget::drawColorMix()
     m_programColorMix.release();
 }
 
-void GLTextureWidget::drawMix()
+void GLTexture::drawMix()
 {
     m_programMix.bind();
 
@@ -377,7 +377,7 @@ void GLTextureWidget::drawMix()
     m_programMix.release();
 }
 
-void GLTextureWidget::drawExercise1()
+void GLTexture::drawExercise1()
 {
     m_programEx1.bind();
 
@@ -396,7 +396,7 @@ void GLTextureWidget::drawExercise1()
     m_programEx1.release();
 }
 
-void GLTextureWidget::drawExercise2()
+void GLTexture::drawExercise2()
 {
     m_programMix.bind();
 
@@ -415,7 +415,7 @@ void GLTextureWidget::drawExercise2()
     m_programMix.release();
 }
 
-void GLTextureWidget::drawExercise3()
+void GLTexture::drawExercise3()
 {
     m_programMix.bind();
 
@@ -434,7 +434,7 @@ void GLTextureWidget::drawExercise3()
     m_programMix.release();
 }
 
-void GLTextureWidget::drawExercise4()
+void GLTexture::drawExercise4()
 {
     m_programEx4.bind();
 

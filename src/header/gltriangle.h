@@ -1,12 +1,12 @@
 #pragma once
 
-#include "glwidget.h"
+#include "glbase.h"
 
-class GLTriangleWidget : public GLWidget
+class GLTriangle : public GLBase
 {
     Q_OBJECT
 public:
-    explicit GLTriangleWidget(QWidget *parent = nullptr);
+    explicit GLTriangle(QWidget *parent = nullptr);
 
 protected:
     void initializeGL() override;

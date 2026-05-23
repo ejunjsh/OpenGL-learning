@@ -2,19 +2,19 @@
 
 #include <QPushButton>
 #include <functional>
-#include "glwidget.h"
+#include "glbase.h"
 
 class ActionButton : public QPushButton
 {
     Q_OBJECT
 public:
-    using Factory = std::function<GLWidget*()>;
+    using Factory = std::function<GLBase*()>;
     explicit ActionButton(const QString &text, QWidget *parent = nullptr, Factory factory = nullptr);
 
 signals:
-    void reloadRequested(GLWidget *widget);
+    void reloadRequested(GLBase *widget);
 
 private:
     Factory m_factory;
-    GLWidget *m_glWidget = nullptr;
+    GLBase *m_glWidget = nullptr;
 };

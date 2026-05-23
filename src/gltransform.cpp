@@ -1,14 +1,14 @@
-#include "header/gltransformwidget.h"
+#include "header/gltransform.h"
 #include <QMatrix4x4>
 #include <QRadioButton>
 #include <QVBoxLayout>
 #include <QtMath>
 
-GLTransformWidget::GLTransformWidget(QWidget *parent)
-    : GLWidget(parent)
+GLTransform::GLTransform(QWidget *parent)
+    : GLBase(parent)
     , m_sceneIndex(0)
 {
-    setName("GLTransformWidget");
+    setName("GLTransform");
 
     QFrame *menu = getMenuPanel();
     QVBoxLayout *menuLayout = new QVBoxLayout(menu);
@@ -37,9 +37,9 @@ GLTransformWidget::GLTransformWidget(QWidget *parent)
     });
 }
 
-void GLTransformWidget::initializeGL()
+void GLTransform::initializeGL()
 {
-    GLWidget::initializeGL();
+    GLBase::initializeGL();
 
     // 编译着色器
     if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/transform/transform.vert") ||
@@ -97,7 +97,7 @@ void GLTransformWidget::initializeGL()
     m_program.release();
 }
 
-void GLTransformWidget::paintGL()
+void GLTransform::paintGL()
 {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -110,7 +110,7 @@ void GLTransformWidget::paintGL()
         drawExercise2();
 }
 
-void GLTransformWidget::drawTransform()
+void GLTransform::drawTransform()
 {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_texture1);
@@ -130,7 +130,7 @@ void GLTransformWidget::drawTransform()
     m_program.release();
 }
 
-void GLTransformWidget::drawExercise1()
+void GLTransform::drawExercise1()
 {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_texture1);
@@ -150,7 +150,7 @@ void GLTransformWidget::drawExercise1()
     m_program.release();
 }
 
-void GLTransformWidget::drawExercise2()
+void GLTransform::drawExercise2()
 {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_texture1);

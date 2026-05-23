@@ -1,16 +1,16 @@
 #pragma once
 
-#include "glwidget.h"
+#include "glbase.h"
 #include "camera.h"
 #include <QSet>
 #include <QElapsedTimer>
 #include <QTimer>
 
-class GLCameraWidget : public GLWidget
+class GLCameraBase : public GLBase
 {
     Q_OBJECT
 public:
-    explicit GLCameraWidget(QWidget *parent = nullptr);
+    explicit GLCameraBase(QWidget *parent = nullptr);
 
 protected:
     void enterEvent(QEnterEvent *event) override;

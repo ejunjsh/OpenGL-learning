@@ -1,12 +1,12 @@
 #pragma once
 
-#include "glwidget.h"
+#include "glbase.h"
 
-class GLTextureWidget : public GLWidget
+class GLTexture : public GLBase
 {
     Q_OBJECT
 public:
-    explicit GLTextureWidget(QWidget *parent = nullptr);
+    explicit GLTexture(QWidget *parent = nullptr);
 
 protected:
     void initializeGL() override;

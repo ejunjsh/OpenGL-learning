@@ -2,17 +2,17 @@
 
 #include <QWidget>
 
-class GLWidget;
+class GLBase;
 
 class Panel : public QWidget
 {
     Q_OBJECT
 public:
     explicit Panel(QWidget *parent = nullptr);
-    void triggerSignal(GLWidget *widget);
+    void triggerSignal(GLBase *widget);
 
 signals:
-    void reloadRequested(GLWidget *widget);
+    void reloadRequested(GLBase *widget);
 
 private:
     void setupUI();

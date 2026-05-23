@@ -20,12 +20,12 @@
 
 #include "object3d.h"
 
-class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
+class GLBase : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
 {
     Q_OBJECT
 public:
-    explicit GLWidget(QWidget *parent = nullptr);
-    ~GLWidget() override;
+    explicit GLBase(QWidget *parent = nullptr);
+    ~GLBase() override;
     void setName(const QString &name);
     float elapsedTime() const { return m_elapsedTime; }
     void stopRendering();

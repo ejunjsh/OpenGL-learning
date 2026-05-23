@@ -2,7 +2,7 @@
 #include <QSurfaceFormat>
 #include <QWidget>
 #include <QHBoxLayout>
-#include "header/glwidget.h"
+#include "header/glbase.h"
 #include "header/panel.h"
 
 int main(int argc, char *argv[])
@@ -26,12 +26,12 @@ int main(int argc, char *argv[])
     Panel *panel = new Panel;
     layout->addWidget(panel, 1);
 
-    QObject::connect(panel, &Panel::reloadRequested, [&](GLWidget *newWidget) {
+    QObject::connect(panel, &Panel::reloadRequested, [&](GLBase *newWidget) {
         for (int i = 0; i < layout->count(); ++i) {
             QLayoutItem *item = layout->itemAt(i);
             if (item->widget()) {
                 QWidget *widget = item->widget();
-                GLWidget *glWidget = qobject_cast<GLWidget*>(widget);
+                GLBase *glWidget = qobject_cast<GLBase*>(widget);
                 if (glWidget && glWidget != newWidget) {
                     layout->removeWidget(glWidget);
                     glWidget->hide();
