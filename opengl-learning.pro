@@ -9,7 +9,7 @@ SOURCES += \
     src/gltriangle.cpp \
     src/gltexture.cpp \
     src/gltransform.cpp \
-    src/glcamera.cpp \
+    src/glcamerax.cpp \
     src/glcoordinate.cpp \
     src/panel.cpp \
     src/actionbutton.cpp \
@@ -23,7 +23,7 @@ HEADERS += \
     src/header/gltriangle.h \
     src/header/gltexture.h \
     src/header/gltransform.h \
-    src/header/glcamera.h \
+    src/header/glcamerax.h \
     src/header/glcoordinate.h \
     src/header/panel.h \
     src/header/actionbutton.h \

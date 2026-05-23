@@ -3,7 +3,7 @@
 #include "header/gltriangle.h"
 #include "header/gltexture.h"
 #include "header/gltransform.h"
-#include "header/glcamera.h"
+#include "header/glcamerax.h"
 #include "header/glcoordinate.h"
 #include <QVBoxLayout>
 #include <QFrame>
@@ -119,14 +119,14 @@ void Panel::setupUI()
         new ActionButton("Texture",  this, []() { return new GLTexture(); }),
         new ActionButton("Transform", this, []() { return new GLTransform(); }),
         new ActionButton("Coordinate Systems", this, []() { return new GLCoordinate(); }),
-        new ActionButton("Camera", this, []() { return new GLCamera(); })
+        new ActionButton("Camera (Enhanced)", this, []() { return new GLCameraX(); })
     }, true);
     addSection("Lighting", {}, false);
     addSection("Model Loading", {}, false);
     addSection("Advanced OpenGL", {}, false);
     addSection("Advanced Lighting", {}, false);
     addSection("PBR", {}, false);
-     addSection("In Practice", {}, false);
+    addSection("In Practice", {}, false);
 
     layout->addStretch();
 

@@ -1,4 +1,4 @@
-#include "header/glcamera.h"
+#include "header/glcamerax.h"
 #include <QMatrix4x4>
 #include <QOpenGLFunctions>
 #include <QRandomGenerator>
@@ -8,10 +8,10 @@
 #include <climits>
 #include "header/mesh.h"
 
-GLCamera::GLCamera(QWidget *parent)
+GLCameraX::GLCameraX(QWidget *parent)
     : GLCameraBase(parent)
 {
-    setName("GLCamera");
+    setName("GLCameraX");
 
     // 添加立方体数量输入框到菜单面板
     QVBoxLayout *layout = new QVBoxLayout(getMenuPanel());
@@ -41,7 +41,7 @@ GLCamera::GLCamera(QWidget *parent)
     });
 }
 
-void GLCamera::initializeGL()
+void GLCameraX::initializeGL()
 {
     GLBase::initializeGL();
 
@@ -59,7 +59,7 @@ void GLCamera::initializeGL()
     setupScene(m_cubeCountSpinBox->value());
 }
 
-void GLCamera::paintGL()
+void GLCameraX::paintGL()
 {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -93,7 +93,7 @@ void GLCamera::paintGL()
     m_program.release();
 }
 
-void GLCamera::setupScene(int cubeCount)
+void GLCameraX::setupScene(int cubeCount)
 {
     // 立方体顶点数据（位置 + 纹理坐标）
     std::vector<Vertex> meshVertices = {

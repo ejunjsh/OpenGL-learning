@@ -4,11 +4,11 @@
 #include <QVector3D>
 #include <QSpinBox>
 
-class GLCamera : public GLCameraBase
+class GLCameraX : public GLCameraBase
 {
     Q_OBJECT
 public:
-    explicit GLCamera(QWidget *parent = nullptr);
+    explicit GLCameraX(QWidget *parent = nullptr);
 
 protected:
     void initializeGL() override;
