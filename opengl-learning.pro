@@ -10,6 +10,7 @@ SOURCES += \
     src/gltexture.cpp \
     src/gltransform.cpp \
     src/glcamera.cpp \
+    src/glcoordinate.cpp \
     src/panel.cpp \
     src/actionbutton.cpp \
     src/camera.cpp \
@@ -23,6 +24,7 @@ HEADERS += \
     src/header/gltexture.h \
     src/header/gltransform.h \
     src/header/glcamera.h \
+    src/header/glcoordinate.h \
     src/header/panel.h \
     src/header/actionbutton.h \
     src/header/camera.h \
