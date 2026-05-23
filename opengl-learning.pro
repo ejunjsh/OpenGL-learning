@@ -5,6 +5,7 @@ CONFIG += C++17
 SOURCES += \
     src/main.cpp \
     src/glbase.cpp \
+    src/glcamera.cpp \
     src/glcamerabase.cpp \
     src/gltriangle.cpp \
     src/gltexture.cpp \
@@ -19,6 +20,7 @@ SOURCES += \
 
 HEADERS += \
     src/header/glbase.h \
+    src/header/glcamera.h \
     src/header/glcamerabase.h \
     src/header/gltriangle.h \
     src/header/gltexture.h \

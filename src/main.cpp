@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 
     QWidget mainWindow;
-    mainWindow.setWindowTitle("opengl-learning");
+    mainWindow.setWindowTitle("OpenGL Learning");
     mainWindow.setFixedSize(1200, 640);
 
     QHBoxLayout *layout = new QHBoxLayout(&mainWindow);

@@ -15,5 +15,7 @@
         <file>shaders/transform/transform.frag</file>
         <file>shaders/coordinate/coordinate.vert</file>
         <file>shaders/coordinate/coordinate.frag</file>
+        <file>shaders/camera/camera.vert</file>
+        <file>shaders/camera/camera.frag</file>
     </qresource>
 </RCC>
