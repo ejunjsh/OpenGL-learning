@@ -118,7 +118,7 @@ void Panel::setupUI()
         new ActionButton("Hello Triangle", this, []() { return new GLTriangle(); }),
         new ActionButton("Texture",  this, []() { return new GLTexture(); }),
         new ActionButton("Transform", this, []() { return new GLTransform(); }),
-        new ActionButton("Coordinate", this, []() { return new GLCoordinate(); }),
+        new ActionButton("Coordinate Systems", this, []() { return new GLCoordinate(); }),
         new ActionButton("Camera", this, []() { return new GLCamera(); })
     }, true);
     addSection("Lighting", {}, false);

@@ -135,7 +135,6 @@ bool GLBase::eventFilter(QObject *obj, QEvent *event)
                 return false;
             }
             toggleMenu();
-            return true;
         } else if (m_helpVisible) {
             QPoint globalPos = QCursor::pos();
             QPoint localPos = m_helpPanel->mapFromGlobal(globalPos);
@@ -144,7 +143,6 @@ bool GLBase::eventFilter(QObject *obj, QEvent *event)
                 return false;
             }
             toggleHelp();
-            return true;
         }
     } else if (event->type() == QEvent::Enter || event->type() == QEvent::Leave) {
         if (obj == m_menuButton) {

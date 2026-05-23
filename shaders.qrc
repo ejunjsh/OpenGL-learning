@@ -13,5 +13,7 @@
         <file>shaders/texture/texture_exercise4.frag</file>
         <file>shaders/transform/transform.vert</file>
         <file>shaders/transform/transform.frag</file>
+        <file>shaders/coordinate/coordinate.vert</file>
+        <file>shaders/coordinate/coordinate.frag</file>
     </qresource>
 </RCC>
