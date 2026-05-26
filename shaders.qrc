@@ -21,5 +21,8 @@
         <file>shaders/color/color.frag</file>
         <file>shaders/color/light_cube.vert</file>
         <file>shaders/color/light_cube.frag</file>
+        <file>shaders/basic_lighting/basic_lighting.vert</file>
+        <file>shaders/basic_lighting/basic_lighting_diffuse.frag</file>
+        <file>shaders/basic_lighting/basic_lighting_specular.frag</file>
     </qresource>
 </RCC>
