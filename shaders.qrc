@@ -24,5 +24,7 @@
         <file>shaders/basic_lighting/basic_lighting.vert</file>
         <file>shaders/basic_lighting/basic_lighting_diffuse.frag</file>
         <file>shaders/basic_lighting/basic_lighting_specular.frag</file>
+        <file>shaders/basic_lighting/basic_lighting_viewspace.vert</file>
+        <file>shaders/basic_lighting/basic_lighting_viewspace.frag</file>
     </qresource>
 </RCC>

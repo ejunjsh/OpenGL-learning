@@ -20,14 +20,17 @@ void GLBasicLighting::setupMenu()
     QRadioButton *scene1Btn = new QRadioButton("Diffuse", menu);
     QRadioButton *scene2Btn = new QRadioButton("Specular", menu);
     QRadioButton *scene3Btn = new QRadioButton("Moving(Exercise 1)", menu);
+    QRadioButton *scene4Btn = new QRadioButton("View Space(Exercise 2)", menu);
     scene1Btn->setChecked(true);
     scene1Btn->setStyleSheet("color: white;");
     scene2Btn->setStyleSheet("color: white;");
     scene3Btn->setStyleSheet("color: white;");
+    scene4Btn->setStyleSheet("color: white;");
 
     menuLayout->addWidget(scene1Btn);
     menuLayout->addWidget(scene2Btn);
     menuLayout->addWidget(scene3Btn);
+    menuLayout->addWidget(scene4Btn);
     menuLayout->addStretch();
 
     connect(scene1Btn, &QRadioButton::toggled, this, [this](bool checked) {
@@ -38,6 +41,9 @@ void GLBasicLighting::setupMenu()
     });
     connect(scene3Btn, &QRadioButton::toggled, this, [this](bool checked) {
         if (checked) m_sceneIndex = 2;
+    });
+    connect(scene4Btn, &QRadioButton::toggled, this, [this](bool checked) {
+        if (checked) m_sceneIndex = 3;
     });
 }
 
@@ -65,6 +71,17 @@ void GLBasicLighting::initializeGL()
     if (!m_specularProgram.link())
     {
         qFatal("Failed to link specular lighting shader program");
+    }
+
+    // 编译 view-space 光照着色器
+    if (!m_viewSpaceProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/basic_lighting/basic_lighting_viewspace.vert") ||
+        !m_viewSpaceProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/basic_lighting/basic_lighting_viewspace.frag"))
+    {
+        qFatal("Failed to compile view-space lighting shader");
+    }
+    if (!m_viewSpaceProgram.link())
+    {
+        qFatal("Failed to link view-space lighting shader program");
     }
 
     // 编译光源立方体着色器（复用 color/light_cube）
@@ -167,7 +184,7 @@ void GLBasicLighting::paintGL()
         drawSpecular(projection, view, viewPos);
         drawLightCube(projection, view, m_lightPos);
     }
-    else
+    else if (m_sceneIndex == 2)
     {
         // 光源位置随时间变化
         const float time = elapsedTime();
@@ -177,6 +194,17 @@ void GLBasicLighting::paintGL()
         dynamicLightPos.setZ(m_lightPos.z());
 
         drawMoving(projection, view, viewPos, dynamicLightPos);
+        drawLightCube(projection, view, dynamicLightPos);
+    }
+    else
+    {
+        const float time = elapsedTime();
+        QVector3D dynamicLightPos;
+        dynamicLightPos.setX(1.0f + qSin(time) * 2.0f);
+        dynamicLightPos.setY(qSin(time / 2.0f) * 1.0f);
+        dynamicLightPos.setZ(m_lightPos.z());
+
+        drawViewSpace(projection, view, dynamicLightPos);
         drawLightCube(projection, view, dynamicLightPos);
     }
 }
@@ -226,6 +254,24 @@ void GLBasicLighting::drawMoving(const QMatrix4x4 &projection, const QMatrix4x4 
 
     QMatrix4x4 model;
     m_specularProgram.setUniformValue("model", model);
+
+    glBindVertexArray(m_cubeVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+
+void GLBasicLighting::drawViewSpace(const QMatrix4x4 &projection, const QMatrix4x4 &view, const QVector3D &lightPos)
+{
+    // view-space: lightPos 传入 VS，VS 将其变换到观察空间再传给 FS
+    // viewDir = -FragPos（观察空间中相机在原点），不需要 viewPos uniform
+    m_viewSpaceProgram.bind();
+    m_viewSpaceProgram.setUniformValue("objectColor", 1.0f, 0.5f, 0.31f);
+    m_viewSpaceProgram.setUniformValue("lightColor", 1.0f, 1.0f, 1.0f);
+    m_viewSpaceProgram.setUniformValue("lightPos", lightPos); // world-space, VS transforms to view-space
+    m_viewSpaceProgram.setUniformValue("projection", projection);
+    m_viewSpaceProgram.setUniformValue("view", view);
+
+    QMatrix4x4 model;
+    m_viewSpaceProgram.setUniformValue("model", model);
 
     glBindVertexArray(m_cubeVAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
