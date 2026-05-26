@@ -20,6 +20,7 @@ private:
     void drawSpecular(const QMatrix4x4 &projection, const QMatrix4x4 &view, const QVector3D &viewPos);
     void drawMoving(const QMatrix4x4 &projection, const QMatrix4x4 &view, const QVector3D &viewPos, const QVector3D &lightPos);
     void drawViewSpace(const QMatrix4x4 &projection, const QMatrix4x4 &view, const QVector3D &lightPos);
+    void drawGouraud(const QMatrix4x4 &projection, const QMatrix4x4 &view, const QVector3D &viewPos, const QVector3D &lightPos);
     void drawLightCube(const QMatrix4x4 &projection, const QMatrix4x4 &view, const QVector3D &lightPos);
 
 private:
@@ -29,8 +30,9 @@ private:
     QOpenGLShaderProgram m_lightProgram;
     QOpenGLShaderProgram m_specularProgram;
     QOpenGLShaderProgram m_viewSpaceProgram;
+    QOpenGLShaderProgram m_gouraudProgram;
     QVector3D m_lightPos = QVector3D(1.2f, 1.0f, 2.0f);
 
-    // 场景索引: 0 = Diffuse, 1 = Specular, 2 = Moving, 3 = View Space
+    // 场景索引: 0=Diffuse, 1=Specular, 2=Moving, 3=ViewSpace, 4=Gouraud
     int m_sceneIndex = 0;
 };

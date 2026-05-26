@@ -21,16 +21,19 @@ void GLBasicLighting::setupMenu()
     QRadioButton *scene2Btn = new QRadioButton("Specular", menu);
     QRadioButton *scene3Btn = new QRadioButton("Moving(Exercise 1)", menu);
     QRadioButton *scene4Btn = new QRadioButton("View Space(Exercise 2)", menu);
+    QRadioButton *scene5Btn = new QRadioButton("Gouraud(Exercise 3)", menu);
     scene1Btn->setChecked(true);
     scene1Btn->setStyleSheet("color: white;");
     scene2Btn->setStyleSheet("color: white;");
     scene3Btn->setStyleSheet("color: white;");
     scene4Btn->setStyleSheet("color: white;");
+    scene5Btn->setStyleSheet("color: white;");
 
     menuLayout->addWidget(scene1Btn);
     menuLayout->addWidget(scene2Btn);
     menuLayout->addWidget(scene3Btn);
     menuLayout->addWidget(scene4Btn);
+    menuLayout->addWidget(scene5Btn);
     menuLayout->addStretch();
 
     connect(scene1Btn, &QRadioButton::toggled, this, [this](bool checked) {
@@ -44,6 +47,9 @@ void GLBasicLighting::setupMenu()
     });
     connect(scene4Btn, &QRadioButton::toggled, this, [this](bool checked) {
         if (checked) m_sceneIndex = 3;
+    });
+    connect(scene5Btn, &QRadioButton::toggled, this, [this](bool checked) {
+        if (checked) m_sceneIndex = 4;
     });
 }
 
@@ -82,6 +88,17 @@ void GLBasicLighting::initializeGL()
     if (!m_viewSpaceProgram.link())
     {
         qFatal("Failed to link view-space lighting shader program");
+    }
+
+    // 编译 Gouraud 着色器（逐顶点光照）
+    if (!m_gouraudProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/basic_lighting/basic_lighting_gouraud.vert") ||
+        !m_gouraudProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/basic_lighting/basic_lighting_gouraud.frag"))
+    {
+        qFatal("Failed to compile Gouraud lighting shader");
+    }
+    if (!m_gouraudProgram.link())
+    {
+        qFatal("Failed to link Gouraud lighting shader program");
     }
 
     // 编译光源立方体着色器（复用 color/light_cube）
@@ -196,7 +213,7 @@ void GLBasicLighting::paintGL()
         drawMoving(projection, view, viewPos, dynamicLightPos);
         drawLightCube(projection, view, dynamicLightPos);
     }
-    else
+    else if (m_sceneIndex == 3)
     {
         const float time = elapsedTime();
         QVector3D dynamicLightPos;
@@ -205,6 +222,17 @@ void GLBasicLighting::paintGL()
         dynamicLightPos.setZ(m_lightPos.z());
 
         drawViewSpace(projection, view, dynamicLightPos);
+        drawLightCube(projection, view, dynamicLightPos);
+    }
+    else
+    {
+        const float time = elapsedTime();
+        QVector3D dynamicLightPos;
+        dynamicLightPos.setX(1.0f + qSin(time) * 2.0f);
+        dynamicLightPos.setY(qSin(time / 2.0f) * 1.0f);
+        dynamicLightPos.setZ(m_lightPos.z());
+
+        drawGouraud(projection, view, viewPos, dynamicLightPos);
         drawLightCube(projection, view, dynamicLightPos);
     }
 }
@@ -272,6 +300,25 @@ void GLBasicLighting::drawViewSpace(const QMatrix4x4 &projection, const QMatrix4
 
     QMatrix4x4 model;
     m_viewSpaceProgram.setUniformValue("model", model);
+
+    glBindVertexArray(m_cubeVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+
+void GLBasicLighting::drawGouraud(const QMatrix4x4 &projection, const QMatrix4x4 &view, const QVector3D &viewPos, const QVector3D &lightPos)
+{
+    // Gouraud shading: 光照计算在 VS 中逐顶点完成，FS 只做插值后的颜色乘法
+    // specular strength=1.0 以更明显展示 Gouraud 的视觉缺陷
+    m_gouraudProgram.bind();
+    m_gouraudProgram.setUniformValue("objectColor", 1.0f, 0.5f, 0.31f);
+    m_gouraudProgram.setUniformValue("lightColor", 1.0f, 1.0f, 1.0f);
+    m_gouraudProgram.setUniformValue("lightPos", lightPos);
+    m_gouraudProgram.setUniformValue("viewPos", viewPos);
+    m_gouraudProgram.setUniformValue("projection", projection);
+    m_gouraudProgram.setUniformValue("view", view);
+
+    QMatrix4x4 model;
+    m_gouraudProgram.setUniformValue("model", model);
 
     glBindVertexArray(m_cubeVAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
