@@ -17,5 +17,9 @@
         <file>shaders/coordinate/coordinate.frag</file>
         <file>shaders/camera/camera.vert</file>
         <file>shaders/camera/camera.frag</file>
+        <file>shaders/color/color.vert</file>
+        <file>shaders/color/color.frag</file>
+        <file>shaders/color/light_cube.vert</file>
+        <file>shaders/color/light_cube.frag</file>
     </qresource>
 </RCC>

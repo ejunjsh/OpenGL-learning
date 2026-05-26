@@ -5,6 +5,7 @@
 #include "header/gltransform.h"
 #include "header/glcamera.h"
 #include "header/glcamerax.h"
+#include "header/glcolor.h"
 #include "header/glcoordinate.h"
 #include <QVBoxLayout>
 #include <QFrame>
@@ -123,7 +124,9 @@ void Panel::setupUI()
         new ActionButton("Camera", this, []() { return new GLCamera(); }),
         new ActionButton("Camera (Enhanced)", this, []() { return new GLCameraX(); })
     }, true);
-    addSection("Lighting", {}, false);
+    addSection("Lighting", {
+        new ActionButton("Color", this, []() { return new GLColor(); })
+    }, false);
     addSection("Model Loading", {}, false);
     addSection("Advanced OpenGL", {}, false);
     addSection("Advanced Lighting", {}, false);
