@@ -3,6 +3,7 @@
 #include <QOpenGLFunctions>
 #include <QRadioButton>
 #include <QVBoxLayout>
+#include <QtMath>
 
 GLBasicLighting::GLBasicLighting(QWidget *parent)
     : GLCameraBase(parent)
@@ -18,12 +19,15 @@ void GLBasicLighting::setupMenu()
 
     QRadioButton *scene1Btn = new QRadioButton("Diffuse", menu);
     QRadioButton *scene2Btn = new QRadioButton("Specular", menu);
+    QRadioButton *scene3Btn = new QRadioButton("Moving(Exercise 1)", menu);
     scene1Btn->setChecked(true);
     scene1Btn->setStyleSheet("color: white;");
     scene2Btn->setStyleSheet("color: white;");
+    scene3Btn->setStyleSheet("color: white;");
 
     menuLayout->addWidget(scene1Btn);
     menuLayout->addWidget(scene2Btn);
+    menuLayout->addWidget(scene3Btn);
     menuLayout->addStretch();
 
     connect(scene1Btn, &QRadioButton::toggled, this, [this](bool checked) {
@@ -31,6 +35,9 @@ void GLBasicLighting::setupMenu()
     });
     connect(scene2Btn, &QRadioButton::toggled, this, [this](bool checked) {
         if (checked) m_sceneIndex = 1;
+    });
+    connect(scene3Btn, &QRadioButton::toggled, this, [this](bool checked) {
+        if (checked) m_sceneIndex = 2;
     });
 }
 
@@ -148,13 +155,30 @@ void GLBasicLighting::paintGL()
     const float aspect = static_cast<float>(width()) / height();
     const QMatrix4x4 projection = m_camera->getProjectionMatrix(aspect);
     const QMatrix4x4 view = m_camera->getViewMatrix();
+    const QVector3D viewPos = m_camera->getPosition();
 
     if (m_sceneIndex == 0)
+    {
         drawDiffuse(projection, view);
+        drawLightCube(projection, view, m_lightPos);
+    }
+    else if (m_sceneIndex == 1)
+    {
+        drawSpecular(projection, view, viewPos);
+        drawLightCube(projection, view, m_lightPos);
+    }
     else
-        drawSpecular(projection, view, m_camera->getPosition());
+    {
+        // 光源位置随时间变化
+        const float time = elapsedTime();
+        QVector3D dynamicLightPos;
+        dynamicLightPos.setX(1.0f + qSin(time) * 2.0f);
+        dynamicLightPos.setY(qSin(time / 2.0f) * 1.0f);
+        dynamicLightPos.setZ(m_lightPos.z());
 
-    drawLightCube(projection, view);
+        drawMoving(projection, view, viewPos, dynamicLightPos);
+        drawLightCube(projection, view, dynamicLightPos);
+    }
 }
 
 void GLBasicLighting::drawDiffuse(const QMatrix4x4 &projection, const QMatrix4x4 &view)
@@ -190,14 +214,31 @@ void GLBasicLighting::drawSpecular(const QMatrix4x4 &projection, const QMatrix4x
     glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
-void GLBasicLighting::drawLightCube(const QMatrix4x4 &projection, const QMatrix4x4 &view)
+void GLBasicLighting::drawMoving(const QMatrix4x4 &projection, const QMatrix4x4 &view, const QVector3D &viewPos, const QVector3D &lightPos)
+{
+    m_specularProgram.bind();
+    m_specularProgram.setUniformValue("objectColor", 1.0f, 0.5f, 0.31f);
+    m_specularProgram.setUniformValue("lightColor", 1.0f, 1.0f, 1.0f);
+    m_specularProgram.setUniformValue("lightPos", lightPos);
+    m_specularProgram.setUniformValue("viewPos", viewPos);
+    m_specularProgram.setUniformValue("projection", projection);
+    m_specularProgram.setUniformValue("view", view);
+
+    QMatrix4x4 model;
+    m_specularProgram.setUniformValue("model", model);
+
+    glBindVertexArray(m_cubeVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+
+void GLBasicLighting::drawLightCube(const QMatrix4x4 &projection, const QMatrix4x4 &view, const QVector3D &lightPos)
 {
     m_lightProgram.bind();
     m_lightProgram.setUniformValue("projection", projection);
     m_lightProgram.setUniformValue("view", view);
 
     QMatrix4x4 lightModel;
-    lightModel.translate(m_lightPos);
+    lightModel.translate(lightPos);
     lightModel.scale(0.2f);
     m_lightProgram.setUniformValue("model", lightModel);
 

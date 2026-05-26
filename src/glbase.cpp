@@ -106,7 +106,7 @@ void GLBase::toggleHelp()
     m_helpVisible = !m_helpVisible;
     if (m_helpVisible) {
         m_helpLabel->setText(getHelpText());
-        m_helpPanel->move(width() - m_helpPanel->width() - 5, height() - m_helpPanel->height() - 20);
+        m_helpPanel->move(width() - m_helpPanel->width() - 5, height() - m_helpPanel->height() - 25);
         m_helpPanel->show();
     } else {
         m_helpPanel->hide();
@@ -225,7 +225,7 @@ void GLBase::resizeEvent(QResizeEvent *event)
         m_menuPanel->move(width() - m_menuPanel->width() - 5, 24);
     }
     if (m_helpVisible) {
-        m_helpPanel->move(width() - m_helpPanel->width() - 5, height() - m_helpPanel->height() - 20);
+        m_helpPanel->move(width() - m_helpPanel->width() - 5, height() - m_helpPanel->height() - 25);
     }
     QOpenGLWidget::resizeEvent(event);
 }
