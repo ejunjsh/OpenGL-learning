@@ -40,3 +40,8 @@
 # debug information files
 *.dwo
 build/
+
+# macOS
+.DS_Store
+
+# 
