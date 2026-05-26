@@ -7,6 +7,7 @@
 #include "header/glcamerax.h"
 #include "header/glcolor.h"
 #include "header/glbasiclighting.h"
+#include "header/glmaterials.h"
 #include "header/glcoordinate.h"
 #include <QVBoxLayout>
 #include <QFrame>
@@ -123,11 +124,12 @@ void Panel::setupUI()
         new ActionButton("Transform", this, []() { return new GLTransform(); }),
         new ActionButton("Coordinate Systems", this, []() { return new GLCoordinate(); }),
         new ActionButton("Camera", this, []() { return new GLCamera(); }),
-        new ActionButton("Camera (Enhanced)", this, []() { return new GLCameraX(); })
+        new ActionButton("Camera (Author Enhanced)", this, []() { return new GLCameraX(); })
     }, true);
     addSection("Lighting", {
         new ActionButton("Color", this, []() { return new GLColor(); }),
-        new ActionButton("Basic Lighting", this, []() { return new GLBasicLighting(); })
+        new ActionButton("Basic Lighting", this, []() { return new GLBasicLighting(); }),
+        new ActionButton("Materials", this, []() { return new GLMaterials(); })
     }, false);
     addSection("Model Loading", {}, false);
     addSection("Advanced OpenGL", {}, false);
