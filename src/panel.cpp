@@ -8,6 +8,7 @@
 #include "header/glcolor.h"
 #include "header/glbasiclighting.h"
 #include "header/glmaterials.h"
+#include "header/gllightingmaps.h"
 #include "header/glcoordinate.h"
 #include <QVBoxLayout>
 #include <QFrame>
@@ -129,7 +130,8 @@ void Panel::setupUI()
     addSection("Lighting", {
         new ActionButton("Color", this, []() { return new GLColor(); }),
         new ActionButton("Basic Lighting", this, []() { return new GLBasicLighting(); }),
-        new ActionButton("Materials", this, []() { return new GLMaterials(); })
+        new ActionButton("Materials", this, []() { return new GLMaterials(); }),
+        new ActionButton("Lighting Maps", this, []() { return new GLLightingMaps(); })
     }, false);
     addSection("Model Loading", {}, false);
     addSection("Advanced OpenGL", {}, false);

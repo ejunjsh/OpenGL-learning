@@ -30,5 +30,7 @@
         <file>shaders/basic_lighting/basic_lighting_gouraud.frag</file>
         <file>shaders/materials/materials.vert</file>
         <file>shaders/materials/materials.frag</file>
+        <file>shaders/lighting_maps/lighting_maps.vert</file>
+        <file>shaders/lighting_maps/lighting_maps.frag</file>
     </qresource>
 </RCC>

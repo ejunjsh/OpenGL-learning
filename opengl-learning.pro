@@ -15,6 +15,7 @@ SOURCES += \
     src/glcolor.cpp \
     src/glbasiclighting.cpp \
     src/glmaterials.cpp \
+    src/gllightingmaps.cpp \
     src/panel.cpp \
     src/actionbutton.cpp \
     src/camera.cpp \
@@ -33,6 +34,7 @@ HEADERS += \
     src/header/glcolor.h \
     src/header/glbasiclighting.h \
     src/header/glmaterials.h \
+    src/header/gllightingmaps.h \
     src/header/panel.h \
     src/header/actionbutton.h \
     src/header/camera.h \
