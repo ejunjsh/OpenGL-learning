@@ -23,9 +23,13 @@ private:
     GLuint m_lightVAO = 0;
     GLuint m_vbo = 0;
     GLuint m_diffuseMap = 0;
+    GLuint m_specularMap = 0;
 
-    QOpenGLShaderProgram m_lightingProgram;
+    QOpenGLShaderProgram m_lightingProgram;    // diffuse + specular
+    QOpenGLShaderProgram m_diffuseProgram;     // diffuse only
     QOpenGLShaderProgram m_lightProgram;
 
     QVector3D m_lightPos = QVector3D(1.2f, 1.0f, 2.0f);
+
+    int m_sceneIndex = 0;  // 0=diffuse only, 1=diffuse+specular map
 };

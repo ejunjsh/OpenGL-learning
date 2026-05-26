@@ -31,6 +31,7 @@
         <file>shaders/materials/materials.vert</file>
         <file>shaders/materials/materials.frag</file>
         <file>shaders/lighting_maps/lighting_maps.vert</file>
-        <file>shaders/lighting_maps/lighting_maps.frag</file>
+        <file>shaders/lighting_maps/lighting_maps_diffuse.frag</file>
+        <file>shaders/lighting_maps/lighting_maps_specular.frag</file>
     </qresource>
 </RCC>
