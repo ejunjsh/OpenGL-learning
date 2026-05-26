@@ -3,6 +3,7 @@
 #include "glcamerabase.h"
 #include "materialproperties.h"
 #include <QComboBox>
+#include <QLabel>
 #include <QOpenGLShaderProgram>
 #include <QVector>
 
@@ -32,6 +33,7 @@ private:
     int m_materialIndex = 0;
 
     QComboBox *m_materialCombo = nullptr;
+    QLabel *m_enhancedLabel = nullptr;
     QVector<MaterialProperties> m_materials;
 
     bool m_animateLight = false;

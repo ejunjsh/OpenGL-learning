@@ -34,8 +34,14 @@ void GLMaterials::setupMenu()
     m_materialCombo->setStyleSheet("color: white;");
     menuLayout->addWidget(m_materialCombo);
 
+    // Author Enhanced 标签（仅场景2可见）
+    m_enhancedLabel = new QLabel("(Author Enhanced)", menu);
+    m_enhancedLabel->setStyleSheet("color: gray; font-size: 8pt;");
+    menuLayout->addWidget(m_enhancedLabel);
+
     // 初始隐藏
     m_materialCombo->hide();
+    m_enhancedLabel->hide();
 
     menuLayout->addStretch();
 
@@ -58,12 +64,14 @@ void GLMaterials::setupMenu()
         if (checked) {
             m_sceneIndex = 0;
             m_materialCombo->hide();
+            m_enhancedLabel->hide();
         }
     });
     connect(scene2Btn, &QRadioButton::toggled, this, [this](bool checked) {
         if (checked) {
             m_sceneIndex = 1;
             m_materialCombo->show();
+            m_enhancedLabel->show();
         }
     });
 
