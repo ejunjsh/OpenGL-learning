@@ -20,12 +20,18 @@ void GLLightCasters::setupMenu()
 
     QRadioButton *dirBtn = new QRadioButton("Directional", menu);
     QRadioButton *pointBtn = new QRadioButton("Point", menu);
+    QRadioButton *spotBtn = new QRadioButton("Spot", menu);
+    QRadioButton *spotSoftBtn = new QRadioButton("Spot Soft", menu);
     dirBtn->setChecked(true);
     dirBtn->setStyleSheet("color: white;");
     pointBtn->setStyleSheet("color: white;");
+    spotBtn->setStyleSheet("color: white;");
+    spotSoftBtn->setStyleSheet("color: white;");
 
     menuLayout->addWidget(dirBtn);
     menuLayout->addWidget(pointBtn);
+    menuLayout->addWidget(spotBtn);
+    menuLayout->addWidget(spotSoftBtn);
     menuLayout->addStretch();
 
     connect(dirBtn, &QRadioButton::toggled, this, [this](bool checked) {
@@ -33,6 +39,12 @@ void GLLightCasters::setupMenu()
     });
     connect(pointBtn, &QRadioButton::toggled, this, [this](bool checked) {
         if (checked) m_sceneIndex = 1;
+    });
+    connect(spotBtn, &QRadioButton::toggled, this, [this](bool checked) {
+        if (checked) m_sceneIndex = 2;
+    });
+    connect(spotSoftBtn, &QRadioButton::toggled, this, [this](bool checked) {
+        if (checked) m_sceneIndex = 3;
     });
 }
 
@@ -73,6 +85,28 @@ void GLLightCasters::initializeGL()
         qFatal("Failed to link light cube shader program");
     }
 
+    // Compile spot light shader (reuse point vert + spot frag)
+    if (!m_spotProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/light_casters/light_casters_point.vert") ||
+        !m_spotProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/light_casters/light_casters_spot.frag"))
+    {
+        qFatal("Failed to compile spot light shader");
+    }
+    if (!m_spotProgram.link())
+    {
+        qFatal("Failed to link spot light shader program");
+    }
+
+    // Compile spot soft light shader (reuse point vert + spot soft frag)
+    if (!m_spotSoftProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/light_casters/light_casters_point.vert") ||
+        !m_spotSoftProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/light_casters/light_casters_spot_soft.frag"))
+    {
+        qFatal("Failed to compile spot soft light shader");
+    }
+    if (!m_spotSoftProgram.link())
+    {
+        qFatal("Failed to link spot soft light shader program");
+    }
+
     // Set texture samplers for both programs
     m_program.bind();
     m_program.setUniformValue("material.diffuse", 0);
@@ -80,6 +114,12 @@ void GLLightCasters::initializeGL()
     m_pointProgram.bind();
     m_pointProgram.setUniformValue("material.diffuse", 0);
     m_pointProgram.setUniformValue("material.specular", 1);
+    m_spotProgram.bind();
+    m_spotProgram.setUniformValue("material.diffuse", 0);
+    m_spotProgram.setUniformValue("material.specular", 1);
+    m_spotSoftProgram.bind();
+    m_spotSoftProgram.setUniformValue("material.diffuse", 0);
+    m_spotSoftProgram.setUniformValue("material.specular", 1);
 
     // Vertex data: position(3) + normal(3) + texCoord(2) = 8 floats
     float vertices[] = {
@@ -210,7 +250,7 @@ void GLLightCasters::paintGL()
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
         m_program.release();
-    } else {
+    } else if (m_sceneIndex == 1) {
         // Scene 1: point light with attenuation
         m_pointProgram.bind();
 
@@ -248,6 +288,82 @@ void GLLightCasters::paintGL()
 
         // Draw light cube
         drawLightCube(projection, view);
+    } else if (m_sceneIndex == 2) {
+        // Scene 2: spot light (hard edge)
+        m_spotProgram.bind();
+
+        m_spotProgram.setUniformValue("light.position", viewPos);
+        m_spotProgram.setUniformValue("light.direction", m_camera->getFront());
+        m_spotProgram.setUniformValue("light.cutOff", qCos(qDegreesToRadians(12.5f)));
+        m_spotProgram.setUniformValue("light.outerCutOff", qCos(qDegreesToRadians(17.5f)));
+        m_spotProgram.setUniformValue("viewPos", viewPos);
+
+        m_spotProgram.setUniformValue("light.ambient",   0.1f, 0.1f, 0.1f);
+        m_spotProgram.setUniformValue("light.diffuse",   0.8f, 0.8f, 0.8f);
+        m_spotProgram.setUniformValue("light.specular",  1.0f, 1.0f, 1.0f);
+
+        m_spotProgram.setUniformValue("light.constant",  1.0f);
+        m_spotProgram.setUniformValue("light.linear",    0.09f);
+        m_spotProgram.setUniformValue("light.quadratic", 0.032f);
+
+        m_spotProgram.setUniformValue("material.shininess", 32.0f);
+
+        m_spotProgram.setUniformValue("projection", projection);
+        m_spotProgram.setUniformValue("view", view);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, m_diffuseMap);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, m_specularMap);
+
+        glBindVertexArray(m_cubeVAO);
+        for (int i = 0; i < 10; i++)
+        {
+            QMatrix4x4 model;
+            model.translate(cubePositions[i]);
+            model.rotate(20.0f * i, QVector3D(1.0f, 0.3f, 0.5f));
+            m_spotProgram.setUniformValue("model", model);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+        m_spotProgram.release();
+    } else {
+        // Scene 3: spot light (soft edge)
+        m_spotSoftProgram.bind();
+
+        m_spotSoftProgram.setUniformValue("light.position", viewPos);
+        m_spotSoftProgram.setUniformValue("light.direction", m_camera->getFront());
+        m_spotSoftProgram.setUniformValue("light.cutOff", qCos(qDegreesToRadians(12.5f)));
+        m_spotSoftProgram.setUniformValue("light.outerCutOff", qCos(qDegreesToRadians(17.5f)));
+        m_spotSoftProgram.setUniformValue("viewPos", viewPos);
+
+        m_spotSoftProgram.setUniformValue("light.ambient",   0.1f, 0.1f, 0.1f);
+        m_spotSoftProgram.setUniformValue("light.diffuse",   0.8f, 0.8f, 0.8f);
+        m_spotSoftProgram.setUniformValue("light.specular",  1.0f, 1.0f, 1.0f);
+
+        m_spotSoftProgram.setUniformValue("light.constant",  1.0f);
+        m_spotSoftProgram.setUniformValue("light.linear",    0.09f);
+        m_spotSoftProgram.setUniformValue("light.quadratic", 0.032f);
+
+        m_spotSoftProgram.setUniformValue("material.shininess", 32.0f);
+
+        m_spotSoftProgram.setUniformValue("projection", projection);
+        m_spotSoftProgram.setUniformValue("view", view);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, m_diffuseMap);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, m_specularMap);
+
+        glBindVertexArray(m_cubeVAO);
+        for (int i = 0; i < 10; i++)
+        {
+            QMatrix4x4 model;
+            model.translate(cubePositions[i]);
+            model.rotate(20.0f * i, QVector3D(1.0f, 0.3f, 0.5f));
+            m_spotSoftProgram.setUniformValue("model", model);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+        m_spotSoftProgram.release();
     }
 }
 

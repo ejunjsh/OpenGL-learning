@@ -26,9 +26,11 @@ private:
 
     QOpenGLShaderProgram m_program;        // directional light
     QOpenGLShaderProgram m_pointProgram;   // point light
-    QOpenGLShaderProgram m_lightProgram;   // light cube
+    QOpenGLShaderProgram m_spotProgram;       // spot light (hard edge)
+    QOpenGLShaderProgram m_spotSoftProgram;   // spot light (soft edge)
+    QOpenGLShaderProgram m_lightProgram;      // light cube
 
     QVector3D m_lightPos = QVector3D(1.2f, 1.0f, 2.0f);
 
-    int m_sceneIndex = 0;  // 0=directional, 1=point
+    int m_sceneIndex = 0;  // 0=directional, 1=point, 2=spot, 3=spot_soft
 };

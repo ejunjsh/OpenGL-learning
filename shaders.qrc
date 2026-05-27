@@ -39,5 +39,7 @@
         <file>shaders/light_casters/light_casters_directional.frag</file>
         <file>shaders/light_casters/light_casters_point.vert</file>
         <file>shaders/light_casters/lights_casters_point.frag</file>
+        <file>shaders/light_casters/light_casters_spot.frag</file>
+        <file>shaders/light_casters/light_casters_spot_soft.frag</file>
     </qresource>
 </RCC>

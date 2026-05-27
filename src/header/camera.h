@@ -28,6 +28,7 @@ public:
     // 相机参数
     QVector3D getPosition() const { return m_position; }
     void setPosition(const QVector3D &pos) { m_position = pos; }
+    QVector3D getFront() const { return m_front; }
 
     float getYaw() const { return m_yaw; }
     void setYaw(float yaw) { m_yaw = yaw; updateCameraVectors(); }
