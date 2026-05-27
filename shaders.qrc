@@ -37,5 +37,7 @@
         <file>shaders/lighting_maps/lighting_maps_emission.frag</file>
         <file>shaders/light_casters/light_casters_directional.vert</file>
         <file>shaders/light_casters/light_casters_directional.frag</file>
+        <file>shaders/light_casters/light_casters_point.vert</file>
+        <file>shaders/light_casters/lights_casters_point.frag</file>
     </qresource>
 </RCC>
