@@ -24,12 +24,16 @@ private:
     GLuint m_vbo = 0;
     GLuint m_diffuseMap = 0;
     GLuint m_specularMap = 0;
+    GLuint m_emissionMap = 0;
 
-    QOpenGLShaderProgram m_lightingProgram;    // diffuse + specular
-    QOpenGLShaderProgram m_diffuseProgram;     // diffuse only
+    QOpenGLShaderProgram m_diffuseProgram;       // scene 0: diffuse only
+    QOpenGLShaderProgram m_specularProgram;      // scene 1: diffuse + specular
+    QOpenGLShaderProgram m_specInvProgram;       // scene 2: diffuse + inverted specular
+    QOpenGLShaderProgram m_emissionProgram;      // scene 3: diffuse + specular + emission
     QOpenGLShaderProgram m_lightProgram;
 
     QVector3D m_lightPos = QVector3D(1.2f, 1.0f, 2.0f);
 
-    int m_sceneIndex = 0;  // 0=diffuse only, 1=diffuse+specular map
+    bool m_animateLight = false;
+    int m_sceneIndex = 0;  // 0=diffuse, 1=diffuse+specular, 2=inverted specular, 3=emission
 };

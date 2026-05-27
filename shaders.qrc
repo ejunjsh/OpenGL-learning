@@ -33,5 +33,7 @@
         <file>shaders/lighting_maps/lighting_maps.vert</file>
         <file>shaders/lighting_maps/lighting_maps_diffuse.frag</file>
         <file>shaders/lighting_maps/lighting_maps_specular.frag</file>
+        <file>shaders/lighting_maps/lighting_maps_specular_inv.frag</file>
+        <file>shaders/lighting_maps/lighting_maps_emission.frag</file>
     </qresource>
 </RCC>

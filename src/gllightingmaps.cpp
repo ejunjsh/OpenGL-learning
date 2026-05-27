@@ -1,8 +1,10 @@
 #include "header/gllightingmaps.h"
+#include <QCheckBox>
+#include <QHBoxLayout>
 #include <QMatrix4x4>
 #include <QOpenGLFunctions>
-#include <QVBoxLayout>
 #include <QRadioButton>
+#include <QVBoxLayout>
 #include <QtMath>
 
 GLLightingMaps::GLLightingMaps(QWidget *parent)
@@ -20,19 +22,43 @@ void GLLightingMaps::setupMenu()
 
     QRadioButton *diffuseBtn = new QRadioButton("Diffuse", menu);
     QRadioButton *specBtn = new QRadioButton("Diff+Spec", menu);
+    QRadioButton *specInvBtn = new QRadioButton("Diff+Spec Inv (Exercise 2)", menu);
+    QRadioButton *emissionBtn = new QRadioButton("Emission (Exercise 4)", menu);
     diffuseBtn->setChecked(true);
     diffuseBtn->setStyleSheet("color: white;");
     specBtn->setStyleSheet("color: white;");
+    specInvBtn->setStyleSheet("color: white;");
+    emissionBtn->setStyleSheet("color: white;");
 
     menuLayout->addWidget(diffuseBtn);
     menuLayout->addWidget(specBtn);
+    menuLayout->addWidget(specInvBtn);
+    menuLayout->addWidget(emissionBtn);
     menuLayout->addStretch();
+
+    // 光源动画开关（底部靠右）
+    QCheckBox *animateChk = new QCheckBox("Animate Light(Author Enhanced)", menu);
+    animateChk->setStyleSheet("color: white; font-size: 8pt;");
+
+    QHBoxLayout *bottomLayout = new QHBoxLayout();
+    bottomLayout->addStretch();
+    bottomLayout->addWidget(animateChk);
+    menuLayout->addLayout(bottomLayout);
 
     connect(diffuseBtn, &QRadioButton::toggled, this, [this](bool checked) {
         if (checked) m_sceneIndex = 0;
     });
     connect(specBtn, &QRadioButton::toggled, this, [this](bool checked) {
         if (checked) m_sceneIndex = 1;
+    });
+    connect(specInvBtn, &QRadioButton::toggled, this, [this](bool checked) {
+        if (checked) m_sceneIndex = 2;
+    });
+    connect(emissionBtn, &QRadioButton::toggled, this, [this](bool checked) {
+        if (checked) m_sceneIndex = 3;
+    });
+    connect(animateChk, &QCheckBox::toggled, this, [this](bool checked) {
+        m_animateLight = checked;
     });
 }
 
@@ -41,14 +67,36 @@ void GLLightingMaps::initializeGL()
     GLBase::initializeGL();
 
     // Compile lighting maps shader (diffuse + specular)
-    if (!m_lightingProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/lighting_maps/lighting_maps.vert") ||
-        !m_lightingProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/lighting_maps/lighting_maps_specular.frag"))
+    if (!m_specularProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/lighting_maps/lighting_maps.vert") ||
+        !m_specularProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/lighting_maps/lighting_maps_specular.frag"))
     {
         qFatal("Failed to compile lighting maps specular shader");
     }
-    if (!m_lightingProgram.link())
+    if (!m_specularProgram.link())
     {
         qFatal("Failed to link lighting maps specular shader program");
+    }
+
+    // Compile lighting maps shader (diffuse + inverted specular)
+    if (!m_specInvProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/lighting_maps/lighting_maps.vert") ||
+        !m_specInvProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/lighting_maps/lighting_maps_specular_inv.frag"))
+    {
+        qFatal("Failed to compile lighting maps inverted specular shader");
+    }
+    if (!m_specInvProgram.link())
+    {
+        qFatal("Failed to link lighting maps inverted specular shader program");
+    }
+
+    // Compile lighting maps shader (diffuse + specular + emission)
+    if (!m_emissionProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/lighting_maps/lighting_maps.vert") ||
+        !m_emissionProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/lighting_maps/lighting_maps_emission.frag"))
+    {
+        qFatal("Failed to compile lighting maps emission shader");
+    }
+    if (!m_emissionProgram.link())
+    {
+        qFatal("Failed to link lighting maps emission shader program");
     }
 
     // Compile lighting maps shader (diffuse only)
@@ -74,13 +122,24 @@ void GLLightingMaps::initializeGL()
     }
 
     // Set texture samplers for specular program
-    m_lightingProgram.bind();
-    m_lightingProgram.setUniformValue("material.diffuse", 0);
-    m_lightingProgram.setUniformValue("material.specular", 1);
+    m_specularProgram.bind();
+    m_specularProgram.setUniformValue("material.diffuse", 0);
+    m_specularProgram.setUniformValue("material.specular", 1);
+
+    // Set texture samplers for inverted specular program
+    m_specInvProgram.bind();
+    m_specInvProgram.setUniformValue("material.diffuse", 0);
+    m_specInvProgram.setUniformValue("material.specular", 1);
 
     // Set texture sampler for diffuse-only program
     m_diffuseProgram.bind();
     m_diffuseProgram.setUniformValue("material.diffuse", 0);
+
+    // Set texture samplers for emission program
+    m_emissionProgram.bind();
+    m_emissionProgram.setUniformValue("material.diffuse", 0);
+    m_emissionProgram.setUniformValue("material.specular", 1);
+    m_emissionProgram.setUniformValue("material.emission", 2);
 
     // Vertex data: position(3) + normal(3) + texCoord(2) = 8 floats
     float vertices[] = {
@@ -161,6 +220,8 @@ void GLLightingMaps::initializeGL()
     m_diffuseMap = loadTexture(":/textures/container2.png");
     // Load specular map
     m_specularMap = loadTexture(":/textures/container2_specular.png");
+    // Load emission map
+    m_emissionMap = loadTexture(":/textures/matrix.jpg");
 }
 
 void GLLightingMaps::paintGL()
@@ -174,32 +235,92 @@ void GLLightingMaps::paintGL()
     const QMatrix4x4 view = m_camera->getViewMatrix();
     const QVector3D viewPos = m_camera->getPosition();
 
+    // Animate light position
+    const float time = elapsedTime();
+    if (m_animateLight) {
+        m_lightPos.setX(1.0f + qSin(time) * 2.0f);
+        m_lightPos.setY(qSin(time / 2.0f) * 1.0f);
+        m_lightPos.setZ(m_lightPos.z());
+    }
+
     // ---- Draw main cube with lighting maps ----
     if (m_sceneIndex == 1) {
         // Scene 1: diffuse + specular
-        m_lightingProgram.bind();
+        m_specularProgram.bind();
 
-        m_lightingProgram.setUniformValue("light.position", m_lightPos);
-        m_lightingProgram.setUniformValue("viewPos", viewPos);
+        m_specularProgram.setUniformValue("light.position", m_lightPos);
+        m_specularProgram.setUniformValue("viewPos", viewPos);
 
-        m_lightingProgram.setUniformValue("light.ambient",  0.2f, 0.2f, 0.2f);
-        m_lightingProgram.setUniformValue("light.diffuse",  0.5f, 0.5f, 0.5f);
-        m_lightingProgram.setUniformValue("light.specular", 1.0f, 1.0f, 1.0f);
+        m_specularProgram.setUniformValue("light.ambient",  0.2f, 0.2f, 0.2f);
+        m_specularProgram.setUniformValue("light.diffuse",  0.5f, 0.5f, 0.5f);
+        m_specularProgram.setUniformValue("light.specular", 1.0f, 1.0f, 1.0f);
 
-        m_lightingProgram.setUniformValue("material.shininess", 64.0f);
+        m_specularProgram.setUniformValue("material.shininess", 64.0f);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, m_diffuseMap);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, m_specularMap);
 
-        m_lightingProgram.setUniformValue("projection", projection);
-        m_lightingProgram.setUniformValue("view", view);
-        m_lightingProgram.setUniformValue("model", QMatrix4x4());
+        m_specularProgram.setUniformValue("projection", projection);
+        m_specularProgram.setUniformValue("view", view);
+        m_specularProgram.setUniformValue("model", QMatrix4x4());
 
         glBindVertexArray(m_cubeVAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
-        m_lightingProgram.release();
+        m_specularProgram.release();
+    } else if (m_sceneIndex == 2) {
+        // Scene 2: diffuse + inverted specular
+        m_specInvProgram.bind();
+
+        m_specInvProgram.setUniformValue("light.position", m_lightPos);
+        m_specInvProgram.setUniformValue("viewPos", viewPos);
+
+        m_specInvProgram.setUniformValue("light.ambient",  0.2f, 0.2f, 0.2f);
+        m_specInvProgram.setUniformValue("light.diffuse",  0.5f, 0.5f, 0.5f);
+        m_specInvProgram.setUniformValue("light.specular", 1.0f, 1.0f, 1.0f);
+
+        m_specInvProgram.setUniformValue("material.shininess", 64.0f);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, m_diffuseMap);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, m_specularMap);
+
+        m_specInvProgram.setUniformValue("projection", projection);
+        m_specInvProgram.setUniformValue("view", view);
+        m_specInvProgram.setUniformValue("model", QMatrix4x4());
+
+        glBindVertexArray(m_cubeVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        m_specInvProgram.release();
+    } else if (m_sceneIndex == 3) {
+        // Scene 3: diffuse + specular + emission
+        m_emissionProgram.bind();
+
+        m_emissionProgram.setUniformValue("light.position", m_lightPos);
+        m_emissionProgram.setUniformValue("viewPos", viewPos);
+
+        m_emissionProgram.setUniformValue("light.ambient",  0.2f, 0.2f, 0.2f);
+        m_emissionProgram.setUniformValue("light.diffuse",  0.5f, 0.5f, 0.5f);
+        m_emissionProgram.setUniformValue("light.specular", 1.0f, 1.0f, 1.0f);
+
+        m_emissionProgram.setUniformValue("material.shininess", 64.0f);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, m_diffuseMap);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, m_specularMap);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, m_emissionMap);
+
+        m_emissionProgram.setUniformValue("projection", projection);
+        m_emissionProgram.setUniformValue("view", view);
+        m_emissionProgram.setUniformValue("model", QMatrix4x4());
+
+        glBindVertexArray(m_cubeVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        m_emissionProgram.release();
     } else {
         // Scene 0: diffuse only
         m_diffuseProgram.bind();
