@@ -22,17 +22,20 @@ void GLLightingMaps::setupMenu()
 
     QRadioButton *diffuseBtn = new QRadioButton("Diffuse", menu);
     QRadioButton *specBtn = new QRadioButton("Diff+Spec", menu);
-    QRadioButton *specInvBtn = new QRadioButton("Diff+Spec Inv (Exercise 2)", menu);
-    QRadioButton *emissionBtn = new QRadioButton("Emission (Exercise 4)", menu);
+    QRadioButton *specInvBtn = new QRadioButton("Diff+Spec Inv (Ex. 2)", menu);
+    QRadioButton *specColorBtn = new QRadioButton("Colored Specular (Ex. 3)", menu);
+    QRadioButton *emissionBtn = new QRadioButton("Emission (Ex. 4)", menu);
     diffuseBtn->setChecked(true);
     diffuseBtn->setStyleSheet("color: white;");
     specBtn->setStyleSheet("color: white;");
     specInvBtn->setStyleSheet("color: white;");
+    specColorBtn->setStyleSheet("color: white;");
     emissionBtn->setStyleSheet("color: white;");
 
     menuLayout->addWidget(diffuseBtn);
     menuLayout->addWidget(specBtn);
     menuLayout->addWidget(specInvBtn);
+    menuLayout->addWidget(specColorBtn);
     menuLayout->addWidget(emissionBtn);
     menuLayout->addStretch();
 
@@ -54,8 +57,11 @@ void GLLightingMaps::setupMenu()
     connect(specInvBtn, &QRadioButton::toggled, this, [this](bool checked) {
         if (checked) m_sceneIndex = 2;
     });
-    connect(emissionBtn, &QRadioButton::toggled, this, [this](bool checked) {
+    connect(specColorBtn, &QRadioButton::toggled, this, [this](bool checked) {
         if (checked) m_sceneIndex = 3;
+    });
+    connect(emissionBtn, &QRadioButton::toggled, this, [this](bool checked) {
+        if (checked) m_sceneIndex = 4;
     });
     connect(animateChk, &QCheckBox::toggled, this, [this](bool checked) {
         m_animateLight = checked;
@@ -220,6 +226,8 @@ void GLLightingMaps::initializeGL()
     m_diffuseMap = loadTexture(":/textures/container2.png");
     // Load specular map
     m_specularMap = loadTexture(":/textures/container2_specular.png");
+    // Load colored specular map (Exercise 3)
+    m_specColoredMap = loadTexture(":/textures/container2_specular_colored.png");
     // Load emission map
     m_emissionMap = loadTexture(":/textures/matrix.jpg");
 }
@@ -295,7 +303,32 @@ void GLLightingMaps::paintGL()
         glDrawArrays(GL_TRIANGLES, 0, 36);
         m_specInvProgram.release();
     } else if (m_sceneIndex == 3) {
-        // Scene 3: diffuse + specular + emission
+        // Scene 3 (Exercise 3): diffuse + colored specular map
+        m_specularProgram.bind();
+
+        m_specularProgram.setUniformValue("light.position", m_lightPos);
+        m_specularProgram.setUniformValue("viewPos", viewPos);
+
+        m_specularProgram.setUniformValue("light.ambient",  0.2f, 0.2f, 0.2f);
+        m_specularProgram.setUniformValue("light.diffuse",  0.5f, 0.5f, 0.5f);
+        m_specularProgram.setUniformValue("light.specular", 1.0f, 1.0f, 1.0f);
+
+        m_specularProgram.setUniformValue("material.shininess", 64.0f);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, m_diffuseMap);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, m_specColoredMap);
+
+        m_specularProgram.setUniformValue("projection", projection);
+        m_specularProgram.setUniformValue("view", view);
+        m_specularProgram.setUniformValue("model", QMatrix4x4());
+
+        glBindVertexArray(m_cubeVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        m_specularProgram.release();
+    } else if (m_sceneIndex == 4) {
+        // Scene 4: diffuse + specular + emission
         m_emissionProgram.bind();
 
         m_emissionProgram.setUniformValue("light.position", m_lightPos);

@@ -24,6 +24,7 @@ private:
     GLuint m_vbo = 0;
     GLuint m_diffuseMap = 0;
     GLuint m_specularMap = 0;
+    GLuint m_specColoredMap = 0;
     GLuint m_emissionMap = 0;
 
     QOpenGLShaderProgram m_diffuseProgram;       // scene 0: diffuse only
@@ -35,5 +36,5 @@ private:
     QVector3D m_lightPos = QVector3D(1.2f, 1.0f, 2.0f);
 
     bool m_animateLight = false;
-    int m_sceneIndex = 0;  // 0=diffuse, 1=diffuse+specular, 2=inverted specular, 3=emission
+    int m_sceneIndex = 0;  // 0=diffuse, 1=diffuse+specular, 2=inverted specular, 3=colored specular, 4=emission
 };
