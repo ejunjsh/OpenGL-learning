@@ -43,5 +43,7 @@
         <file>shaders/light_casters/light_casters_spot_soft.frag</file>
         <file>shaders/light_casters/multiple_lights.frag</file>
         <file>shaders/color/light_cube_colored.frag</file>
+        <file>shaders/pbr/lighting.vert</file>
+        <file>shaders/pbr/lighting.frag</file>
     </qresource>
 </RCC>

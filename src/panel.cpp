@@ -12,6 +12,7 @@
 #include "header/gllightcasters.h"
 #include "header/glmultiplelights.h"
 #include "header/glcoordinate.h"
+#include "header/glpbrlighting.h"
 #include <QVBoxLayout>
 #include <QFrame>
 #include <QTimer>
@@ -140,7 +141,9 @@ void Panel::setupUI()
     addSection("Model Loading", {}, false);
     addSection("Advanced OpenGL", {}, false);
     addSection("Advanced Lighting", {}, false);
-    addSection("PBR", {}, false);
+    addSection("PBR", {
+        new ActionButton("PBR Lighting", this, []() { return new GLPbrLighting(); })
+    }, false);
     addSection("In Practice", {}, false);
 
     layout->addStretch();

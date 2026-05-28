@@ -23,6 +23,7 @@ SOURCES += \
     src/camera.cpp \
     src/mesh.cpp \
     src/object3d.cpp \
+    src/glpbrlighting.cpp \
 
 HEADERS += \
     src/header/glbase.h \
@@ -43,7 +44,8 @@ HEADERS += \
     src/header/actionbutton.h \
     src/header/camera.h \
     src/header/mesh.h \
-    src/header/object3d.h
+    src/header/object3d.h \
+    src/header/glpbrlighting.h
 
 RESOURCES += \
     textures.qrc \
