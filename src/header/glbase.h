@@ -18,7 +18,6 @@
 #include <QPushButton>
 #include <memory>
 
-#include "object3d.h"
 
 class GLBase : public QOpenGLWidget, protected QOpenGLFunctions_3_3_Core
 {
@@ -48,7 +47,7 @@ private:
 
 protected:
     QOpenGLShaderProgram m_program;
-    std::shared_ptr<Object3D> m_rootObject;
+
     float m_elapsedTime = 0.0f;
 
 private:

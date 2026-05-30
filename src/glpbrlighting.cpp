@@ -1,7 +1,8 @@
 #include "header/glpbrlighting.h"
-#include "header/spheremesh.h"
 #include <QMatrix4x4>
 #include <QtMath>
+#include <vector>
+#include <cmath>
 
 GLPbrLighting::GLPbrLighting(QWidget *parent)
     : GLCameraBase(parent)
@@ -9,7 +10,61 @@ GLPbrLighting::GLPbrLighting(QWidget *parent)
     setName("GLPbrLighting");
 }
 
-GLPbrLighting::~GLPbrLighting() = default;
+GLPbrLighting::~GLPbrLighting()
+{
+    makeCurrent();
+    m_vao.destroy();
+    m_vbo.destroy();
+    m_ebo.destroy();
+    doneCurrent();
+}
+
+static void generateSphereData(std::vector<float> &vertices, std::vector<unsigned int> &indices,
+                               unsigned int xSegments = 64, unsigned int ySegments = 64)
+{
+    constexpr float PI = 3.14159265359f;
+    for (unsigned int y = 0; y <= ySegments; ++y)
+    {
+        for (unsigned int x = 0; x <= xSegments; ++x)
+        {
+            float xSegment = static_cast<float>(x) / xSegments;
+            float ySegment = static_cast<float>(y) / ySegments;
+            float xPos = std::cos(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
+            float yPos = std::cos(ySegment * PI);
+            float zPos = std::sin(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
+
+            // position
+            vertices.push_back(xPos);
+            vertices.push_back(yPos);
+            vertices.push_back(zPos);
+            // normal (same as position for unit sphere)
+            vertices.push_back(xPos);
+            vertices.push_back(yPos);
+            vertices.push_back(zPos);
+            // texCoords
+            vertices.push_back(xSegment);
+            vertices.push_back(ySegment);
+        }
+    }
+
+    for (unsigned int y = 0; y < ySegments; ++y)
+    {
+        for (unsigned int x = 0; x < xSegments; ++x)
+        {
+            unsigned int topLeft     = y       * (xSegments + 1) + x;
+            unsigned int topRight    = y       * (xSegments + 1) + x + 1;
+            unsigned int bottomLeft  = (y + 1) * (xSegments + 1) + x;
+            unsigned int bottomRight = (y + 1) * (xSegments + 1) + x + 1;
+
+            indices.push_back(topLeft);
+            indices.push_back(bottomLeft);
+            indices.push_back(topRight);
+            indices.push_back(topRight);
+            indices.push_back(bottomLeft);
+            indices.push_back(bottomRight);
+        }
+    }
+}
 
 void GLPbrLighting::initializeGL()
 {
@@ -26,9 +81,40 @@ void GLPbrLighting::initializeGL()
         qFatal("Failed to link PBR lighting shader program");
     }
 
-    // Generate sphere mesh and setup OpenGL resources
-    m_sphere = generateSphere();
-    m_sphere->setup();
+    // Generate sphere geometry
+    std::vector<float> vertices;
+    std::vector<unsigned int> indices;
+    generateSphereData(vertices, indices);
+
+    m_indexCount = static_cast<unsigned int>(indices.size());
+
+    // Setup VAO/VBO/EBO — 8 floats per vertex: pos(3) + normal(3) + texCoord(2)
+    constexpr int stride = 8 * sizeof(float);
+
+    m_vao.create();
+    m_vao.bind();
+
+    m_vbo.create();
+    m_vbo.bind();
+    m_vbo.allocate(vertices.data(), static_cast<int>(vertices.size() * sizeof(float)));
+
+    m_ebo.create();
+    m_ebo.bind();
+    m_ebo.allocate(indices.data(), static_cast<int>(indices.size() * sizeof(unsigned int)));
+
+    // location 0: aPos (vec3)
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(0));
+    glEnableVertexAttribArray(0);
+    // location 1: aNormal (vec3)
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    // location 2: aTexCoords (vec2)
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+
+    m_vao.release();
+    m_vbo.release();
+    m_ebo.release();
 }
 
 void GLPbrLighting::paintGL()
@@ -93,11 +179,14 @@ void GLPbrLighting::paintGL()
             m_program.setUniformValue("model", model);
             m_program.setUniformValue("normalMatrix", model.normalMatrix());
 
-            m_sphere->draw(m_program);
+            m_vao.bind();
+            glDrawElements(GL_TRIANGLES, static_cast<int>(m_indexCount), GL_UNSIGNED_INT, nullptr);
+            m_vao.release();
         }
     }
 
     // Render light source spheres
+    m_vao.bind();
     for (int i = 0; i < 4; ++i)
     {
         QMatrix4x4 model;
@@ -106,6 +195,7 @@ void GLPbrLighting::paintGL()
         m_program.setUniformValue("model", model);
         m_program.setUniformValue("normalMatrix", model.normalMatrix());
 
-        m_sphere->draw(m_program);
+        glDrawElements(GL_TRIANGLES, static_cast<int>(m_indexCount), GL_UNSIGNED_INT, nullptr);
     }
+    m_vao.release();
 }

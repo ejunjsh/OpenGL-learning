@@ -2,9 +2,8 @@
 
 #include "glcamerabase.h"
 #include <QOpenGLShaderProgram>
-#include <memory>
-
-class Mesh;
+#include <QOpenGLVertexArrayObject>
+#include <QOpenGLBuffer>
 
 class GLPbrLighting : public GLCameraBase
 {
@@ -18,7 +17,10 @@ protected:
     void paintGL() override;
 
 private:
-    std::unique_ptr<Mesh> m_sphere;
+    QOpenGLVertexArrayObject m_vao;
+    QOpenGLBuffer m_vbo{QOpenGLBuffer::VertexBuffer};
+    QOpenGLBuffer m_ebo{QOpenGLBuffer::IndexBuffer};
+    unsigned int m_indexCount = 0;
 
     QOpenGLShaderProgram m_program;
 };

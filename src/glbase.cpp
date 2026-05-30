@@ -80,7 +80,6 @@ GLBase::GLBase(QWidget *parent)
 GLBase::~GLBase()
 {
     makeCurrent();
-    m_rootObject.reset();
     doneCurrent();
 }
 

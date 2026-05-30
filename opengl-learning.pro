@@ -21,8 +21,7 @@ SOURCES += \
     src/panel.cpp \
     src/actionbutton.cpp \
     src/camera.cpp \
-    src/mesh.cpp \
-    src/object3d.cpp \
+
     src/glpbrlighting.cpp \
 
 HEADERS += \
@@ -43,8 +42,7 @@ HEADERS += \
     src/header/panel.h \
     src/header/actionbutton.h \
     src/header/camera.h \
-    src/header/mesh.h \
-    src/header/object3d.h \
+
     src/header/glpbrlighting.h
 
 RESOURCES += \

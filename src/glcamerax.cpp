@@ -6,7 +6,6 @@
 #include <QLabel>
 #include <QPushButton>
 #include <climits>
-#include "header/mesh.h"
 
 GLCameraX::GLCameraX(QWidget *parent)
     : GLCameraBase(parent)
@@ -32,12 +31,9 @@ GLCameraX::GLCameraX(QWidget *parent)
     layout->addWidget(btn);
 
     layout->addStretch();
-    getMenuPanel()->setLayout(layout);
 
     connect(btn, &QPushButton::clicked, this, [this]() {
-        makeCurrent();
         setupScene(m_cubeCountSpinBox->value());
-        doneCurrent();
     });
 }
 
@@ -56,6 +52,78 @@ void GLCameraX::initializeGL()
         qFatal("Failed to link texture shader program");
     }
 
+    // 立方体顶点数据：position(3) + texCoord(2) = 5 floats
+    static const float vertices[] = {
+        // 背面
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+        // 正面
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        // 左面
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        // 右面
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        // 下面
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        // 上面
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+    };
+
+    glGenVertexArrays(1, &m_cubeVAO);
+    glGenBuffers(1, &m_cubeVBO);
+
+    glBindVertexArray(m_cubeVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, m_cubeVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    // position (location 0): 3 floats
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    // texCoord (location 2): 2 floats (matches texture.vert layout)
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
+                          (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+
+    glBindVertexArray(0);
+
+    // 加载纹理
+    m_containerTex = loadTexture(":/textures/container.jpg");
+    m_faceTex = loadTexture(":/textures/awesomeface.png", true);
+
+    // 设置 sampler uniforms
+    m_program.bind();
+    m_program.setUniformValue("container", 0);
+    m_program.setUniformValue("face", 1);
+
     setupScene(m_cubeCountSpinBox->value());
 }
 
@@ -73,121 +141,62 @@ void GLCameraX::paintGL()
     m_program.setUniformValue("view", view);
     m_program.setUniformValue("projection", projection);
 
-    if (m_rootObject)
+    // 绑定纹理
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_containerTex);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, m_faceTex);
+
+    // 绘制所有立方体
+    glBindVertexArray(m_cubeVAO);
+    const float speed = 30.0f;
+    const float t = elapsedTime();
+
+    for (const auto &cube : m_cubes)
     {
-        // 每个立方体随时间独立旋转（相同转速，固定方向）
-        const auto &children = m_rootObject->getChildren();
-        const float speed = 30.0f;  // 统一转速
-        for (size_t i = 0; i < children.size(); ++i) {
-            auto cube = children[i];
-            const QVector3D &dir = m_rotationDirections[i];
-            cube->setRotation(QVector3D(
-                elapsedTime() * speed * dir.x(),
-                elapsedTime() * speed * dir.y(),
-                elapsedTime() * speed * dir.z()
-            ));
-        }
-        m_rootObject->draw(m_program);
+        QMatrix4x4 model;
+        model.translate(cube.position);
+        model.rotate(t * speed * cube.rotationDir.x(), QVector3D(1.0f, 0.0f, 0.0f));
+        model.rotate(t * speed * cube.rotationDir.y(), QVector3D(0.0f, 1.0f, 0.0f));
+        model.rotate(t * speed * cube.rotationDir.z(), QVector3D(0.0f, 0.0f, 1.0f));
+        m_program.setUniformValue("model", model);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
     }
 
+    glBindVertexArray(0);
     m_program.release();
 }
 
 void GLCameraX::setupScene(int cubeCount)
 {
-    // 立方体顶点数据（位置 + 纹理坐标）
-    std::vector<Vertex> meshVertices = {
-        // 背面
-        Vertex(QVector3D(-0.5f, -0.5f, -0.5f), QVector2D(0.0f, 0.0f)),
-        Vertex(QVector3D( 0.5f, -0.5f, -0.5f), QVector2D(1.0f, 0.0f)),
-        Vertex(QVector3D( 0.5f,  0.5f, -0.5f), QVector2D(1.0f, 1.0f)),
-        Vertex(QVector3D( 0.5f,  0.5f, -0.5f), QVector2D(1.0f, 1.0f)),
-        Vertex(QVector3D(-0.5f,  0.5f, -0.5f), QVector2D(0.0f, 1.0f)),
-        Vertex(QVector3D(-0.5f, -0.5f, -0.5f), QVector2D(0.0f, 0.0f)),
+    m_cubes.clear();
+    m_cubes.reserve(cubeCount);
 
-        // 正面
-        Vertex(QVector3D(-0.5f, -0.5f,  0.5f), QVector2D(0.0f, 0.0f)),
-        Vertex(QVector3D( 0.5f, -0.5f,  0.5f), QVector2D(1.0f, 0.0f)),
-        Vertex(QVector3D( 0.5f,  0.5f,  0.5f), QVector2D(1.0f, 1.0f)),
-        Vertex(QVector3D( 0.5f,  0.5f,  0.5f), QVector2D(1.0f, 1.0f)),
-        Vertex(QVector3D(-0.5f,  0.5f,  0.5f), QVector2D(0.0f, 1.0f)),
-        Vertex(QVector3D(-0.5f, -0.5f,  0.5f), QVector2D(0.0f, 0.0f)),
-
-        // 左面
-        Vertex(QVector3D(-0.5f,  0.5f,  0.5f), QVector2D(1.0f, 0.0f)),
-        Vertex(QVector3D(-0.5f,  0.5f, -0.5f), QVector2D(1.0f, 1.0f)),
-        Vertex(QVector3D(-0.5f, -0.5f, -0.5f), QVector2D(0.0f, 1.0f)),
-        Vertex(QVector3D(-0.5f, -0.5f, -0.5f), QVector2D(0.0f, 1.0f)),
-        Vertex(QVector3D(-0.5f, -0.5f,  0.5f), QVector2D(0.0f, 0.0f)),
-        Vertex(QVector3D(-0.5f,  0.5f,  0.5f), QVector2D(1.0f, 0.0f)),
-
-        // 右面
-        Vertex(QVector3D( 0.5f,  0.5f,  0.5f), QVector2D(1.0f, 0.0f)),
-        Vertex(QVector3D( 0.5f,  0.5f, -0.5f), QVector2D(1.0f, 1.0f)),
-        Vertex(QVector3D( 0.5f, -0.5f, -0.5f), QVector2D(0.0f, 1.0f)),
-        Vertex(QVector3D( 0.5f, -0.5f, -0.5f), QVector2D(0.0f, 1.0f)),
-        Vertex(QVector3D( 0.5f, -0.5f,  0.5f), QVector2D(0.0f, 0.0f)),
-        Vertex(QVector3D( 0.5f,  0.5f,  0.5f), QVector2D(1.0f, 0.0f)),
-
-        // 下面
-        Vertex(QVector3D(-0.5f, -0.5f, -0.5f), QVector2D(0.0f, 1.0f)),
-        Vertex(QVector3D( 0.5f, -0.5f, -0.5f), QVector2D(1.0f, 1.0f)),
-        Vertex(QVector3D( 0.5f, -0.5f,  0.5f), QVector2D(1.0f, 0.0f)),
-        Vertex(QVector3D( 0.5f, -0.5f,  0.5f), QVector2D(1.0f, 0.0f)),
-        Vertex(QVector3D(-0.5f, -0.5f,  0.5f), QVector2D(0.0f, 0.0f)),
-        Vertex(QVector3D(-0.5f, -0.5f, -0.5f), QVector2D(0.0f, 1.0f)),
-
-        // 上面
-        Vertex(QVector3D(-0.5f,  0.5f, -0.5f), QVector2D(0.0f, 1.0f)),
-        Vertex(QVector3D( 0.5f,  0.5f, -0.5f), QVector2D(1.0f, 1.0f)),
-        Vertex(QVector3D( 0.5f,  0.5f,  0.5f), QVector2D(1.0f, 0.0f)),
-        Vertex(QVector3D( 0.5f,  0.5f,  0.5f), QVector2D(1.0f, 0.0f)),
-        Vertex(QVector3D(-0.5f,  0.5f,  0.5f), QVector2D(0.0f, 0.0f)),
-        Vertex(QVector3D(-0.5f,  0.5f, -0.5f), QVector2D(0.0f, 1.0f))
-    };
-
-    // 立方体不需要索引
-    std::vector<unsigned int> indices;
-
-    // 加载纹理
-    Texture containerTex;
-    containerTex.id = loadTexture(":/textures/container.jpg");
-    containerTex.name = "container";
-
-    Texture faceTex;
-    faceTex.id = loadTexture(":/textures/awesomeface.png", true);
-    faceTex.name = "face";
-
-    std::vector<Texture> textures = {containerTex, faceTex};
-
-    auto mesh = std::make_shared<Mesh>(meshVertices, indices, textures);
-
-    m_rootObject = std::make_shared<Object3D>("Root");
-    m_rotationDirections.clear();
-
-    // 创建立方体，随机位置分布在摄像头前方
-    for (int i = 0; i < cubeCount; i++) {
-        auto cube = std::make_shared<Object3D>(QString("Cube%1").arg(i));
-        cube->addMesh(mesh);
+    for (int i = 0; i < cubeCount; i++)
+    {
+        CubeData cube;
 
         // 随机位置：在摄像头前方 (z: -2 到 -15), x: -20 到 20, y: -15 到 15
-        int x = QRandomGenerator::global()->bounded(-20, 20);
-        int y = QRandomGenerator::global()->bounded(-15, 15);
-        int z = QRandomGenerator::global()->bounded(-15, -2);
-        cube->setPosition(QVector3D(x, y, z));
+        cube.position = QVector3D(
+            QRandomGenerator::global()->bounded(-20, 20),
+            QRandomGenerator::global()->bounded(-15, 15),
+            QRandomGenerator::global()->bounded(-15, -2)
+        );
 
-        // 每个立方体有独立的随机初始旋转
-        float rotX = QRandomGenerator::global()->bounded(360);
-        float rotY = QRandomGenerator::global()->bounded(360);
-        float rotZ = QRandomGenerator::global()->bounded(360);
-        cube->setRotation(QVector3D(rotX, rotY, rotZ));
+        // 初始旋转
+        cube.rotation = QVector3D(
+            QRandomGenerator::global()->bounded(360),
+            QRandomGenerator::global()->bounded(360),
+            QRandomGenerator::global()->bounded(360)
+        );
 
-        // 生成固定旋转方向
-        float dirX = (QRandomGenerator::global()->bounded(0, 201) - 100) / 100.0f;
-        float dirY = (QRandomGenerator::global()->bounded(0, 201) - 100) / 100.0f;
-        float dirZ = (QRandomGenerator::global()->bounded(0, 201) - 100) / 100.0f;
-        m_rotationDirections.append(QVector3D(dirX, dirY, dirZ));
+        // 固定旋转方向
+        cube.rotationDir = QVector3D(
+            (QRandomGenerator::global()->bounded(0, 201) - 100) / 100.0f,
+            (QRandomGenerator::global()->bounded(0, 201) - 100) / 100.0f,
+            (QRandomGenerator::global()->bounded(0, 201) - 100) / 100.0f
+        );
 
-        m_rootObject->addChild(cube);
+        m_cubes.append(cube);
     }
 }
