@@ -4,6 +4,8 @@
 #include <QOpenGLShaderProgram>
 #include <QVector3D>
 
+class QCheckBox;
+
 class GLMultipleLights : public GLCameraBase
 {
     Q_OBJECT
@@ -13,6 +15,9 @@ public:
 protected:
     void initializeGL() override;
     void paintGL() override;
+
+private slots:
+    void onAnimateToggled(bool checked);
 
 private:
     void setupMenu();
@@ -29,4 +34,7 @@ private:
     QOpenGLShaderProgram m_lightProgram;
 
     int m_sceneIndex = 0;  // 0=Default, 1=Desert, 2=Factory, 3=Horror, 4=Biochemical Lab
+
+    QCheckBox *m_animateCheck = nullptr;
+    bool m_animateLights = false;
 };

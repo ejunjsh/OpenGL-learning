@@ -1,7 +1,10 @@
 #include "header/glmultiplelights.h"
 #include <QMatrix4x4>
 #include <QOpenGLFunctions>
-#include <QRadiobutton>
+#include <QCheckBox>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QRadioButton>
 #include <QVBoxLayout>
 #include <QtMath>
 
@@ -34,7 +37,25 @@ void GLMultipleLights::setupMenu()
     menuLayout->addWidget(factoryBtn);
     menuLayout->addWidget(horrorBtn);
     menuLayout->addWidget(bioBtn);
+
+    m_animateCheck = new QCheckBox(menu);
+    m_animateCheck->setText("");  // no text on checkbox itself
+
+    QLabel *checkLabel = new QLabel(menu);
+    checkLabel->setText(
+        "<a href='toggle' style='color:#aaa; text-decoration:none; font-size:10px;'>"
+        "Animate Light Cubes<br>(Author Enhanced)</a>");
+    checkLabel->setWordWrap(true);
+    connect(checkLabel, &QLabel::linkActivated, m_animateCheck, &QCheckBox::toggle);
+
+    // Bottom-right placement
+    QHBoxLayout *bottomRow = new QHBoxLayout();
+    bottomRow->addStretch();
+    bottomRow->addWidget(m_animateCheck);
+    bottomRow->addWidget(checkLabel);
+
     menuLayout->addStretch();
+    menuLayout->addLayout(bottomRow);
 
     connect(defaultBtn, &QRadioButton::toggled, this, [this](bool checked) {
         if (checked) m_sceneIndex = 0;
@@ -51,6 +72,8 @@ void GLMultipleLights::setupMenu()
     connect(bioBtn, &QRadioButton::toggled, this, [this](bool checked) {
         if (checked) m_sceneIndex = 4;
     });
+
+    connect(m_animateCheck, &QCheckBox::toggled, this, &GLMultipleLights::onAnimateToggled);
 }
 
 void GLMultipleLights::initializeGL()
@@ -289,13 +312,30 @@ void GLMultipleLights::paintGL()
         QVector3D(-1.3f,  1.0f, -1.5f)
     };
 
-    // 4 point light positions (static)
-    const QVector3D pointLightPositions[] = {
-        QVector3D( 0.7f,  0.2f,  2.0f),
-        QVector3D( 2.3f, -3.3f, -4.0f),
-        QVector3D(-4.0f,  2.0f, -12.0f),
-        QVector3D( 0.0f,  0.0f, -3.0f)
-    };
+    // 4 point light positions (animated when checkbox is checked)
+    QVector3D pointLightPositions[4];
+    if (m_animateLights)
+    {
+        const float elapsed = elapsedTime();
+        for (int i = 0; i < 4; i++)
+        {
+            const float speed = 0.8f + i * 0.4f;
+            const float radius = 2.5f + i * 0.8f;
+            const float angle = elapsed * speed;
+            pointLightPositions[i] = QVector3D(
+                qCos(angle + i * 1.57f) * radius,
+                qSin(angle * 1.3f + i * 0.7f) * 1.5f,
+                qSin(angle + i * 1.57f) * radius - 3.0f
+            );
+        }
+    }
+    else
+    {
+        pointLightPositions[0] = QVector3D( 0.7f,  0.2f,  2.0f);
+        pointLightPositions[1] = QVector3D( 2.3f, -3.3f, -4.0f);
+        pointLightPositions[2] = QVector3D(-4.0f,  2.0f, -12.0f);
+        pointLightPositions[3] = QVector3D( 0.0f,  0.0f, -3.0f);
+    }
 
     // ---- Draw main cubes ----
     m_program.bind();
@@ -379,4 +419,9 @@ void GLMultipleLights::drawLightCube(const QMatrix4x4 &projection, const QMatrix
 
     glBindVertexArray(m_lightVAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+
+void GLMultipleLights::onAnimateToggled(bool checked)
+{
+    m_animateLights = checked;
 }
