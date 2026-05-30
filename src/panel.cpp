@@ -13,6 +13,7 @@
 #include "header/glmultiplelights.h"
 #include "header/glcoordinate.h"
 #include "header/glpbrlighting.h"
+#include "header/glmodelloading.h"
 #include <QVBoxLayout>
 #include <QFrame>
 #include <QTimer>
@@ -138,7 +139,9 @@ void Panel::setupUI()
         new ActionButton("Light Casters", this, []() { return new GLLightCasters(); }),
         new ActionButton("Multiple Lights", this, []() { return new GLMultipleLights(); })
     }, false);
-    addSection("Model Loading", {}, false);
+    addSection("Model Loading", {
+        new ActionButton("Backpack", this, []() { return new GLModelLoading(); })
+    }, false);
     addSection("Advanced OpenGL", {}, false);
     addSection("Advanced Lighting", {}, false);
     addSection("PBR", {

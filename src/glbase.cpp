@@ -178,14 +178,27 @@ unsigned int GLBase::loadTexture(const QString &path, bool flipVertically, bool 
         qWarning() << "Failed to load texture:" << path;
         return 0;
     }
-    image = image.convertToFormat(QImage::Format_RGBA8888);
 
-    if (flipVertically) {
-        image = image.flipped(Qt::Vertical);
+    // Flip before format conversion to avoid copying twice
+    if (flipVertically)
+        image = image.mirrored(false, true);
+    if (flipHorizontally)
+        image = image.mirrored(true, false);
+
+    // Detect channel count and choose matching OpenGL format
+    GLenum format;
+    QImage::Format targetFormat;
+    if (image.isGrayscale()) {
+        format = GL_RED;
+        targetFormat = QImage::Format_Grayscale8;
+    } else if (image.hasAlphaChannel()) {
+        format = GL_RGBA;
+        targetFormat = QImage::Format_RGBA8888;
+    } else {
+        format = GL_RGB;
+        targetFormat = QImage::Format_RGB888;
     }
-    if (flipHorizontally) {
-        image = image.flipped(Qt::Horizontal);
-    }
+    image = image.convertToFormat(targetFormat);
 
     unsigned int textureID;
     glGenTextures(1, &textureID);
@@ -196,8 +209,8 @@ unsigned int GLBase::loadTexture(const QString &path, bool flipVertically, bool 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width(), image.height(),
-                 0, GL_RGBA, GL_UNSIGNED_BYTE, image.bits());
+    glTexImage2D(GL_TEXTURE_2D, 0, format, image.width(), image.height(),
+                 0, format, GL_UNSIGNED_BYTE, image.bits());
     glGenerateMipmap(GL_TEXTURE_2D);
 
     glBindTexture(GL_TEXTURE_2D, 0);

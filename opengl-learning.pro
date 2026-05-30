@@ -1,7 +1,16 @@
 TEMPLATE = app
 TARGET = opengl-learning
 QT += widgets opengl openglwidgets
-CONFIG += C++17
+CONFIG += c++17
+
+# Assimp
+macx {
+    INCLUDEPATH += /opt/homebrew/include
+    LIBS += -L/opt/homebrew/lib -lassimp
+} else {
+    INCLUDEPATH += /usr/local/include
+    LIBS += -L/usr/local/lib -lassimp
+}
 SOURCES += \
     src/main.cpp \
     src/glbase.cpp \
@@ -22,6 +31,7 @@ SOURCES += \
     src/actionbutton.cpp \
     src/camera.cpp \
     src/glpbrlighting.cpp \
+    src/glmodelloading.cpp \
 
 HEADERS += \
     src/header/glbase.h \
@@ -42,6 +52,7 @@ HEADERS += \
     src/header/actionbutton.h \
     src/header/camera.h \
     src/header/glpbrlighting.h \
+    src/header/glmodelloading.h \
     src/header/materialproperties.h \
     src/header/model.h
 

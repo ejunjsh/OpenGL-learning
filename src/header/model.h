@@ -178,13 +178,34 @@ inline unsigned int TextureFromFile(const char *path, const std::string &directo
         qWarning() << "Texture failed to load at path:" << path;
         return 0;
     }
-    image = image.convertToFormat(QImage::Format_RGBA8888);
+
+    // Flip vertically — equivalent to stbi_set_flip_vertically_on_load(true)
+    image = image.mirrored(false, true);
+
+    // Detect channel count and choose matching OpenGL format
+    GLenum format;
+    QImage::Format targetFormat;
+    if (image.isGrayscale())
+    {
+        format = GL_RED;
+        targetFormat = QImage::Format_Grayscale8;
+    }
+    else if (image.hasAlphaChannel())
+    {
+        format = GL_RGBA;
+        targetFormat = QImage::Format_RGBA8888;
+    }
+    else
+    {
+        format = GL_RGB;
+        targetFormat = QImage::Format_RGB888;
+    }
+    image = image.convertToFormat(targetFormat);
 
     unsigned int textureID;
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);
 
-    GLenum format = GL_RGBA;
     glTexImage2D(GL_TEXTURE_2D, 0, format, image.width(), image.height(),
                  0, format, GL_UNSIGNED_BYTE, image.bits());
     glGenerateMipmap(GL_TEXTURE_2D);
