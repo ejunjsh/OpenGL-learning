@@ -58,8 +58,8 @@ void GLMultipleLights::initializeGL()
     GLBase::initializeGL();
 
     // Compile main shader
-    if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/light_casters/light_casters_point.vert") ||
-        !m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/light_casters/multiple_lights.frag"))
+    if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/light_casters/light_casters_point.vert") ||
+        !m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/light_casters/multiple_lights.frag"))
     {
         qFatal("Failed to compile multiple lights shader");
     }
@@ -69,8 +69,8 @@ void GLMultipleLights::initializeGL()
     }
 
     // Compile light cube shader
-    if (!m_lightProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/color/light_cube.vert") ||
-        !m_lightProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/color/light_cube_colored.frag"))
+    if (!m_lightProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/color/light_cube.vert") ||
+        !m_lightProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/color/light_cube_colored.frag"))
     {
         qFatal("Failed to compile light cube shader");
     }
@@ -153,8 +153,8 @@ void GLMultipleLights::initializeGL()
     glBindVertexArray(0);
 
     // Load textures
-    m_diffuseMap = loadTexture(":/textures/container2.png");
-    m_specularMap = loadTexture(":/textures/container2_specular.png");
+    m_diffuseMap = loadTexture("textures/container2.png");
+    m_specularMap = loadTexture("textures/container2_specular.png");
 }
 
 void GLMultipleLights::paintGL()

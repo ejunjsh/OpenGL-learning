@@ -92,8 +92,8 @@ void GLMaterials::initializeGL()
     GLBase::initializeGL();
 
     // 编译 materials 着色器
-    if (!m_materialProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/materials/materials.vert") ||
-        !m_materialProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/materials/materials.frag"))
+    if (!m_materialProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/materials/materials.vert") ||
+        !m_materialProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/materials/materials.frag"))
     {
         qFatal("Failed to compile materials shader");
     }
@@ -103,8 +103,8 @@ void GLMaterials::initializeGL()
     }
 
     // 编译光源立方体着色器（复用 color/light_cube）
-    if (!m_lightProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/color/light_cube.vert") ||
-        !m_lightProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/color/light_cube.frag"))
+    if (!m_lightProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/color/light_cube.vert") ||
+        !m_lightProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/color/light_cube.frag"))
     {
         qFatal("Failed to compile light cube shader");
     }

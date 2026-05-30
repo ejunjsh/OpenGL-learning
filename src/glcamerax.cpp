@@ -41,8 +41,8 @@ void GLCameraX::initializeGL()
 {
     GLBase::initializeGL();
 
-    if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/texture.vert") ||
-        !m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/texture.frag"))
+    if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/texture.vert") ||
+        !m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/texture.frag"))
     {
         qFatal("Failed to compile texture shader");
     }
@@ -116,8 +116,8 @@ void GLCameraX::initializeGL()
     glBindVertexArray(0);
 
     // 加载纹理
-    m_containerTex = loadTexture(":/textures/container.jpg");
-    m_faceTex = loadTexture(":/textures/awesomeface.png", true);
+    m_containerTex = loadTexture("textures/container.jpg");
+    m_faceTex = loadTexture("textures/awesomeface.png", true);
 
     // 设置 sampler uniforms
     m_program.bind();

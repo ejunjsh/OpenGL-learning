@@ -2,6 +2,7 @@
 #include <QSurfaceFormat>
 #include <QWidget>
 #include <QHBoxLayout>
+#include <QDir>
 #include "header/glbase.h"
 #include "header/panel.h"
 
@@ -14,6 +15,11 @@ int main(int argc, char *argv[])
     fmt.setSwapInterval(1);
     QSurfaceFormat::setDefaultFormat(fmt);
     QApplication app(argc, argv);
+
+#ifdef Q_OS_MAC
+    // macOS 从 Finder 启动时工作目录是 /，修正为 exe 所在目录（.app/Contents/MacOS/）
+    QDir::setCurrent(QCoreApplication::applicationDirPath());
+#endif
 
     QWidget mainWindow;
     mainWindow.setWindowTitle("OpenGL Learning");

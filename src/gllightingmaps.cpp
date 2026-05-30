@@ -73,8 +73,8 @@ void GLLightingMaps::initializeGL()
     GLBase::initializeGL();
 
     // Compile lighting maps shader (diffuse + specular)
-    if (!m_specularProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/lighting_maps/lighting_maps.vert") ||
-        !m_specularProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/lighting_maps/lighting_maps_specular.frag"))
+    if (!m_specularProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/lighting_maps/lighting_maps.vert") ||
+        !m_specularProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/lighting_maps/lighting_maps_specular.frag"))
     {
         qFatal("Failed to compile lighting maps specular shader");
     }
@@ -84,8 +84,8 @@ void GLLightingMaps::initializeGL()
     }
 
     // Compile lighting maps shader (diffuse + inverted specular)
-    if (!m_specInvProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/lighting_maps/lighting_maps.vert") ||
-        !m_specInvProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/lighting_maps/lighting_maps_specular_inv.frag"))
+    if (!m_specInvProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/lighting_maps/lighting_maps.vert") ||
+        !m_specInvProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/lighting_maps/lighting_maps_specular_inv.frag"))
     {
         qFatal("Failed to compile lighting maps inverted specular shader");
     }
@@ -95,8 +95,8 @@ void GLLightingMaps::initializeGL()
     }
 
     // Compile lighting maps shader (diffuse + specular + emission)
-    if (!m_emissionProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/lighting_maps/lighting_maps.vert") ||
-        !m_emissionProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/lighting_maps/lighting_maps_emission.frag"))
+    if (!m_emissionProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/lighting_maps/lighting_maps.vert") ||
+        !m_emissionProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/lighting_maps/lighting_maps_emission.frag"))
     {
         qFatal("Failed to compile lighting maps emission shader");
     }
@@ -106,8 +106,8 @@ void GLLightingMaps::initializeGL()
     }
 
     // Compile lighting maps shader (diffuse only)
-    if (!m_diffuseProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/lighting_maps/lighting_maps.vert") ||
-        !m_diffuseProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/lighting_maps/lighting_maps_diffuse.frag"))
+    if (!m_diffuseProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/lighting_maps/lighting_maps.vert") ||
+        !m_diffuseProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/lighting_maps/lighting_maps_diffuse.frag"))
     {
         qFatal("Failed to compile lighting maps diffuse shader");
     }
@@ -117,8 +117,8 @@ void GLLightingMaps::initializeGL()
     }
 
     // Compile light cube shader
-    if (!m_lightProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/color/light_cube.vert") ||
-        !m_lightProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/color/light_cube.frag"))
+    if (!m_lightProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/color/light_cube.vert") ||
+        !m_lightProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/color/light_cube.frag"))
     {
         qFatal("Failed to compile light cube shader");
     }
@@ -223,13 +223,13 @@ void GLLightingMaps::initializeGL()
     glBindVertexArray(0);
 
     // Load diffuse map
-    m_diffuseMap = loadTexture(":/textures/container2.png");
+    m_diffuseMap = loadTexture("textures/container2.png");
     // Load specular map
-    m_specularMap = loadTexture(":/textures/container2_specular.png");
+    m_specularMap = loadTexture("textures/container2_specular.png");
     // Load colored specular map (Exercise 3)
-    m_specColoredMap = loadTexture(":/textures/container2_specular_colored.png");
+    m_specColoredMap = loadTexture("textures/container2_specular_colored.png");
     // Load emission map
-    m_emissionMap = loadTexture(":/textures/matrix.jpg");
+    m_emissionMap = loadTexture("textures/matrix.jpg");
 }
 
 void GLLightingMaps::paintGL()

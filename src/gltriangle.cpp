@@ -61,8 +61,8 @@ void GLTriangle::initializeGL()
 {
     GLBase::initializeGL();
 
-    if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/triangle.vert") ||
-        !m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/triangle.frag"))
+    if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/triangle.vert") ||
+        !m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/triangle.frag"))
     {
         qFatal("Failed to compile shader");
     }
@@ -72,8 +72,8 @@ void GLTriangle::initializeGL()
         qFatal("Failed to link shader program");
     }
 
-    if (!m_program1.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/triangle.vert") ||
-        !m_program1.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/triangle1.frag"))
+    if (!m_program1.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/triangle.vert") ||
+        !m_program1.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/triangle1.frag"))
     {
         qFatal("Failed to compile shader 1");
     }

@@ -53,8 +53,8 @@ void GLLightCasters::initializeGL()
     GLBase::initializeGL();
 
     // Compile directional light shader
-    if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/light_casters/light_casters_directional.vert") ||
-        !m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/light_casters/light_casters_directional.frag"))
+    if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/light_casters/light_casters_directional.vert") ||
+        !m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/light_casters/light_casters_directional.frag"))
     {
         qFatal("Failed to compile directional light shader");
     }
@@ -64,8 +64,8 @@ void GLLightCasters::initializeGL()
     }
 
     // Compile point light shader
-    if (!m_pointProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/light_casters/light_casters_point.vert") ||
-        !m_pointProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/light_casters/lights_casters_point.frag"))
+    if (!m_pointProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/light_casters/light_casters_point.vert") ||
+        !m_pointProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/light_casters/lights_casters_point.frag"))
     {
         qFatal("Failed to compile point light shader");
     }
@@ -75,8 +75,8 @@ void GLLightCasters::initializeGL()
     }
 
     // Compile light cube shader (reuse existing)
-    if (!m_lightProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/color/light_cube.vert") ||
-        !m_lightProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/color/light_cube.frag"))
+    if (!m_lightProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/color/light_cube.vert") ||
+        !m_lightProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/color/light_cube.frag"))
     {
         qFatal("Failed to compile light cube shader");
     }
@@ -86,8 +86,8 @@ void GLLightCasters::initializeGL()
     }
 
     // Compile spot light shader (reuse point vert + spot frag)
-    if (!m_spotProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/light_casters/light_casters_point.vert") ||
-        !m_spotProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/light_casters/light_casters_spot.frag"))
+    if (!m_spotProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/light_casters/light_casters_point.vert") ||
+        !m_spotProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/light_casters/light_casters_spot.frag"))
     {
         qFatal("Failed to compile spot light shader");
     }
@@ -97,8 +97,8 @@ void GLLightCasters::initializeGL()
     }
 
     // Compile spot soft light shader (reuse point vert + spot soft frag)
-    if (!m_spotSoftProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/light_casters/light_casters_point.vert") ||
-        !m_spotSoftProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/light_casters/light_casters_spot_soft.frag"))
+    if (!m_spotSoftProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/light_casters/light_casters_point.vert") ||
+        !m_spotSoftProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/light_casters/light_casters_spot_soft.frag"))
     {
         qFatal("Failed to compile spot soft light shader");
     }
@@ -190,8 +190,8 @@ void GLLightCasters::initializeGL()
     glBindVertexArray(0);
 
     // Load textures
-    m_diffuseMap = loadTexture(":/textures/container2.png");
-    m_specularMap = loadTexture(":/textures/container2_specular.png");
+    m_diffuseMap = loadTexture("textures/container2.png");
+    m_specularMap = loadTexture("textures/container2_specular.png");
 }
 
 void GLLightCasters::paintGL()

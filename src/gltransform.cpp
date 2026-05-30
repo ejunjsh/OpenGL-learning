@@ -42,8 +42,8 @@ void GLTransform::initializeGL()
     GLBase::initializeGL();
 
     // 编译着色器
-    if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/transform/transform.vert") ||
-        !m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/transform/transform.frag"))
+    if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/transform/transform.vert") ||
+        !m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/transform/transform.frag"))
     {
         qFatal("Failed to compile transform shader");
     }
@@ -87,8 +87,8 @@ void GLTransform::initializeGL()
     glBindVertexArray(0);
 
     // 加载纹理
-    m_texture1 = loadTexture(":/textures/container.jpg");
-    m_texture2 = loadTexture(":/textures/awesomeface.png", true);
+    m_texture1 = loadTexture("textures/container.jpg");
+    m_texture2 = loadTexture("textures/awesomeface.png", true);
 
     // 设置每个采样器对应的纹理单元
     m_program.bind();

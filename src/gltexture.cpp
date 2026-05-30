@@ -99,8 +99,8 @@ void GLTexture::initializeGL()
 {
     GLBase::initializeGL();
 
-    if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/texture/texture_simple.vert") ||
-        !m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/texture/texture_simple.frag"))
+    if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/texture/texture_simple.vert") ||
+        !m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/texture/texture_simple.frag"))
     {
         qFatal("Failed to compile texture shader");
     }
@@ -110,8 +110,8 @@ void GLTexture::initializeGL()
         qFatal("Failed to link texture shader program");
     }
 
-    if (!m_programColorMix.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/texture/texture_simple.vert") ||
-        !m_programColorMix.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/texture/texture_color_mix.frag"))
+    if (!m_programColorMix.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/texture/texture_simple.vert") ||
+        !m_programColorMix.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/texture/texture_color_mix.frag"))
     {
         qFatal("Failed to compile color mix shader");
     }
@@ -121,8 +121,8 @@ void GLTexture::initializeGL()
         qFatal("Failed to link color mix shader program");
     }
 
-    if (!m_programMix.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/texture/texture_simple.vert") ||
-        !m_programMix.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/texture/texture_mix.frag"))
+    if (!m_programMix.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/texture/texture_simple.vert") ||
+        !m_programMix.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/texture/texture_mix.frag"))
     {
         qFatal("Failed to compile mix texture shader");
     }
@@ -132,8 +132,8 @@ void GLTexture::initializeGL()
         qFatal("Failed to link mix texture shader program");
     }
 
-    if (!m_programEx1.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/texture/texture_simple.vert") ||
-        !m_programEx1.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/texture/texture_exercise1.frag"))
+    if (!m_programEx1.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/texture/texture_simple.vert") ||
+        !m_programEx1.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/texture/texture_exercise1.frag"))
     {
         qFatal("Failed to compile exercise1 shader");
     }
@@ -143,8 +143,8 @@ void GLTexture::initializeGL()
         qFatal("Failed to link exercise1 shader program");
     }
 
-    if (!m_programEx4.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/texture/texture_simple.vert") ||
-        !m_programEx4.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/texture/texture_exercise4.frag"))
+    if (!m_programEx4.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/texture/texture_simple.vert") ||
+        !m_programEx4.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/texture/texture_exercise4.frag"))
     {
         qFatal("Failed to compile exercise4 shader");
     }
@@ -255,13 +255,13 @@ void GLTexture::initializeGL()
     glBindVertexArray(0);
 
     // load texture1
-    m_texture1 = loadTexture(":/textures/container.jpg");
+    m_texture1 = loadTexture("textures/container.jpg");
     // load texture2
-    m_texture2 = loadTexture(":/textures/awesomeface.png", true);
+    m_texture2 = loadTexture("textures/awesomeface.png", true);
 
     // load texture1 with GL_CLAMP_TO_EDGE for exercise2
     {
-        QImage image(":/textures/container.jpg");
+        QImage image("textures/container.jpg");
         image = image.convertToFormat(QImage::Format_RGBA8888);
 
         glGenTextures(1, &m_textureClamp);
@@ -279,7 +279,7 @@ void GLTexture::initializeGL()
     // load textures with GL_NEAREST filtering for exercise3 (to see individual pixels)
     // texture1 (container) with GL_CLAMP_TO_EDGE + GL_NEAREST
     {
-        QImage image(":/textures/container.jpg");
+        QImage image("textures/container.jpg");
         image = image.convertToFormat(QImage::Format_RGBA8888);
 
         glGenTextures(1, &m_textureEx3_1);
@@ -296,7 +296,7 @@ void GLTexture::initializeGL()
 
     // texture2 (awesomeface) with GL_REPEAT + GL_NEAREST
     {
-        QImage image(":/textures/awesomeface.png");
+        QImage image("textures/awesomeface.png");
         image = image.convertToFormat(QImage::Format_RGBA8888);
 
         glGenTextures(1, &m_textureEx3_2);

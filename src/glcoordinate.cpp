@@ -49,8 +49,8 @@ void GLCoordinate::initializeGL()
     GLBase::initializeGL();
 
     // 编译链接着色器程序
-    if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/coordinate/coordinate.vert") ||
-        !m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/coordinate/coordinate.frag"))
+    if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/coordinate/coordinate.vert") ||
+        !m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/coordinate/coordinate.frag"))
     {
         qFatal("Failed to compile coordinate shader");
     }
@@ -154,8 +154,8 @@ void GLCoordinate::initializeGL()
     }
 
     // 加载纹理
-    m_texture1 = loadTexture(":/textures/container.jpg", true);
-    m_texture2 = loadTexture(":/textures/awesomeface.png", true);
+    m_texture1 = loadTexture("textures/container.jpg", true);
+    m_texture2 = loadTexture("textures/awesomeface.png", true);
 
     // 设置采样器对应的纹理单元
     m_program.bind();

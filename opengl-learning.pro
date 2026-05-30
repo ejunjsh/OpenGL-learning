@@ -41,8 +41,21 @@ HEADERS += \
     src/header/panel.h \
     src/header/actionbutton.h \
     src/header/camera.h \
-    src/header/glpbrlighting.h
+    src/header/glpbrlighting.h \
+    src/header/materialproperties.h \
+    src/header/model.h
 
-RESOURCES += \
-    textures.qrc \
-    shaders.qrc
+
+# 自动把资源复制到 exe 旁边（每次 make 都会执行，不只限于重新链接）
+macx {
+    RES_DEST = $$OUT_PWD/opengl-learning.app/Contents/MacOS
+} else {
+    RES_DEST = $$OUT_PWD
+}
+
+# 把 shadow build 目录的 .pro 文件也纳入拷贝触发条件
+copy_res.commands += $$QMAKE_COPY_DIR \"$$PWD/shaders\" \"$$RES_DEST/shaders\" && $$QMAKE_COPY_DIR \"$$PWD/textures\" \"$$RES_DEST/textures\" && $$QMAKE_COPY_DIR \"$$PWD/objects\" \"$$RES_DEST/objects\"
+copy_res.target = copy_res
+copy_res.CONFIG += phony
+QMAKE_EXTRA_TARGETS += copy_res
+PRE_TARGETDEPS += copy_res

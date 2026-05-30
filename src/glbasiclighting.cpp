@@ -58,8 +58,8 @@ void GLBasicLighting::initializeGL()
     GLBase::initializeGL();
 
     // 编译 diffuse 光照着色器
-    if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/basic_lighting/basic_lighting.vert") ||
-        !m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/basic_lighting/basic_lighting_diffuse.frag"))
+    if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/basic_lighting/basic_lighting.vert") ||
+        !m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/basic_lighting/basic_lighting_diffuse.frag"))
     {
         qFatal("Failed to compile diffuse lighting shader");
     }
@@ -69,8 +69,8 @@ void GLBasicLighting::initializeGL()
     }
 
     // 编译 specular 光照着色器（共用顶点着色器）
-    if (!m_specularProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/basic_lighting/basic_lighting.vert") ||
-        !m_specularProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/basic_lighting/basic_lighting_specular.frag"))
+    if (!m_specularProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/basic_lighting/basic_lighting.vert") ||
+        !m_specularProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/basic_lighting/basic_lighting_specular.frag"))
     {
         qFatal("Failed to compile specular lighting shader");
     }
@@ -80,8 +80,8 @@ void GLBasicLighting::initializeGL()
     }
 
     // 编译 view-space 光照着色器
-    if (!m_viewSpaceProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/basic_lighting/basic_lighting_viewspace.vert") ||
-        !m_viewSpaceProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/basic_lighting/basic_lighting_viewspace.frag"))
+    if (!m_viewSpaceProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/basic_lighting/basic_lighting_viewspace.vert") ||
+        !m_viewSpaceProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/basic_lighting/basic_lighting_viewspace.frag"))
     {
         qFatal("Failed to compile view-space lighting shader");
     }
@@ -91,8 +91,8 @@ void GLBasicLighting::initializeGL()
     }
 
     // 编译 Gouraud 着色器（逐顶点光照）
-    if (!m_gouraudProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/basic_lighting/basic_lighting_gouraud.vert") ||
-        !m_gouraudProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/basic_lighting/basic_lighting_gouraud.frag"))
+    if (!m_gouraudProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/basic_lighting/basic_lighting_gouraud.vert") ||
+        !m_gouraudProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/basic_lighting/basic_lighting_gouraud.frag"))
     {
         qFatal("Failed to compile Gouraud lighting shader");
     }
@@ -102,8 +102,8 @@ void GLBasicLighting::initializeGL()
     }
 
     // 编译光源立方体着色器（复用 color/light_cube）
-    if (!m_lightProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/color/light_cube.vert") ||
-        !m_lightProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/color/light_cube.frag"))
+    if (!m_lightProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/color/light_cube.vert") ||
+        !m_lightProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/color/light_cube.frag"))
     {
         qFatal("Failed to compile light cube shader");
     }

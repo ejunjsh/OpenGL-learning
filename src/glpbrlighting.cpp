@@ -71,8 +71,8 @@ void GLPbrLighting::initializeGL()
     GLBase::initializeGL();
 
     // Compile PBR shader
-    if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/pbr/lighting.vert") ||
-        !m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/pbr/lighting.frag"))
+    if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/pbr/lighting.vert") ||
+        !m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/pbr/lighting.frag"))
     {
         qFatal("Failed to compile PBR lighting shader");
     }

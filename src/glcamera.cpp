@@ -66,8 +66,8 @@ void GLCamera::initializeGL()
     GLBase::initializeGL();
 
     // 编译着色器
-    if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/camera/camera.vert") ||
-        !m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/camera/camera.frag"))
+    if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/camera/camera.vert") ||
+        !m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/camera/camera.frag"))
     {
         qFatal("Failed to compile camera shader");
     }
@@ -139,8 +139,8 @@ void GLCamera::initializeGL()
     glBindVertexArray(0);
 
     // 加载纹理
-    m_texture1 = loadTexture(":/textures/container.jpg");
-    m_texture2 = loadTexture(":/textures/awesomeface.png", true);
+    m_texture1 = loadTexture("textures/container.jpg");
+    m_texture2 = loadTexture("textures/awesomeface.png", true);
 
     // 设置每个采样器对应的纹理单元
     m_program.bind();

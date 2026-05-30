@@ -13,8 +13,8 @@ void GLColor::initializeGL()
     GLBase::initializeGL();
 
     // 编译立方体着色器
-    if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/color/color.vert") ||
-        !m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/color/color.frag"))
+    if (!m_program.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/color/color.vert") ||
+        !m_program.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/color/color.frag"))
     {
         qFatal("Failed to compile color shader");
     }
@@ -24,8 +24,8 @@ void GLColor::initializeGL()
     }
 
     // 编译光源立方体着色器
-    if (!m_lightProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/color/light_cube.vert") ||
-        !m_lightProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/color/light_cube.frag"))
+    if (!m_lightProgram.addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/color/light_cube.vert") ||
+        !m_lightProgram.addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/color/light_cube.frag"))
     {
         qFatal("Failed to compile light cube shader");
     }
