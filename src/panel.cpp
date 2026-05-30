@@ -140,7 +140,7 @@ void Panel::setupUI()
         new ActionButton("Multiple Lights", this, []() { return new GLMultipleLights(); })
     }, false);
     addSection("Model Loading", {
-        new ActionButton("Backpack", this, []() { return new GLModelLoading(); })
+        new ActionButton("Model Loading", this, []() { return new GLModelLoading(); })
     }, false);
     addSection("Advanced OpenGL", {}, false);
     addSection("Advanced Lighting", {}, false);
