@@ -21,7 +21,6 @@ SOURCES += \
     src/panel.cpp \
     src/actionbutton.cpp \
     src/camera.cpp \
-
     src/glpbrlighting.cpp \
 
 HEADERS += \
@@ -42,7 +41,6 @@ HEADERS += \
     src/header/panel.h \
     src/header/actionbutton.h \
     src/header/camera.h \
-
     src/header/glpbrlighting.h
 
 RESOURCES += \
