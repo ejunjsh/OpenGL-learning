@@ -65,7 +65,7 @@ macx {
 }
 
 # 把 shadow build 目录的 .pro 文件也纳入拷贝触发条件
-copy_res.commands += $$QMAKE_COPY_DIR \"$$PWD/shaders\" \"$$RES_DEST/shaders\" && $$QMAKE_COPY_DIR \"$$PWD/textures\" \"$$RES_DEST/textures\" && $$QMAKE_COPY_DIR \"$$PWD/objects\" \"$$RES_DEST/objects\"
+copy_res.commands += mkdir -p \"$$RES_DEST\" && $$QMAKE_COPY_DIR \"$$PWD/shaders\" \"$$RES_DEST/shaders\" && $$QMAKE_COPY_DIR \"$$PWD/textures\" \"$$RES_DEST/textures\" && $$QMAKE_COPY_DIR \"$$PWD/objects\" \"$$RES_DEST/objects\"
 copy_res.target = copy_res
 copy_res.CONFIG += phony
 QMAKE_EXTRA_TARGETS += copy_res
