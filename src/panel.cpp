@@ -14,6 +14,7 @@
 #include "header/glcoordinate.h"
 #include "header/glpbrlighting.h"
 #include "header/glmodelloading.h"
+#include "header/gldepthtesting.h"
 #include <QVBoxLayout>
 #include <QFrame>
 #include <QTimer>
@@ -142,7 +143,9 @@ void Panel::setupUI()
     addSection("Model Loading", {
         new ActionButton("Model Loading", this, []() { return new GLModelLoading(); })
     }, false);
-    addSection("Advanced OpenGL", {}, false);
+    addSection("Advanced OpenGL", {
+        new ActionButton("Depth Testing", this, []() { return new GLDepthTesting(); })
+    }, false);
     addSection("Advanced Lighting", {}, false);
     addSection("PBR", {
         new ActionButton("PBR Lighting", this, []() { return new GLPbrLighting(); })
