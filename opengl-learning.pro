@@ -34,6 +34,7 @@ SOURCES += \
     src/glmodelloading.cpp \
     src/gldepthtesting.cpp \
     src/glstenciltesting.cpp \
+    src/glblending.cpp \
 
 HEADERS += \
     src/header/glbase.h \
@@ -57,6 +58,7 @@ HEADERS += \
     src/header/glmodelloading.h \
     src/header/gldepthtesting.h \
     src/header/glstenciltesting.h \
+    src/header/glblending.h \
     src/header/materialproperties.h \
     src/header/model.h
 
