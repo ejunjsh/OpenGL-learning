@@ -17,6 +17,7 @@
 #include "header/gldepthtesting.h"
 #include "header/glstenciltesting.h"
 #include "header/glblending.h"
+#include "header/glfaceculling.h"
 #include <QVBoxLayout>
 #include <QFrame>
 #include <QTimer>
@@ -148,7 +149,8 @@ void Panel::setupUI()
     addSection("Advanced OpenGL", {
         new ActionButton("Depth Testing", this, []() { return new GLDepthTesting(); }),
         new ActionButton("Stencil Testing", this, []() { return new GLStencilTesting(); }),
-        new ActionButton("Blending", this, []() { return new GLBlending(); })
+        new ActionButton("Blending", this, []() { return new GLBlending(); }),
+        new ActionButton("Face Culling", this, []() { return new GLFaceCulling(); })
     }, false);
     addSection("Advanced Lighting", {}, false);
     addSection("PBR", {
