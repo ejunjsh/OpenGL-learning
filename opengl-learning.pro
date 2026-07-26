@@ -36,6 +36,7 @@ SOURCES += \
     src/glstenciltesting.cpp \
     src/glblending.cpp \
     src/glfaceculling.cpp \
+    src/glframebuffers.cpp \
 
 HEADERS += \
     src/header/glbase.h \
@@ -61,6 +62,7 @@ HEADERS += \
     src/header/glstenciltesting.h \
     src/header/glblending.h \
     src/header/glfaceculling.h \
+    src/header/glframebuffers.h \
     src/header/materialproperties.h \
     src/header/model.h
 
